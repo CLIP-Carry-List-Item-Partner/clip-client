@@ -3,6 +3,7 @@ import "./App.css";
 import { Stack, Button, Image, Text } from "@chakra-ui/react";
 import Home from "./pages/home";
 import CurrentList from "./pages/currentList/currentList.tsx";
+import Navbar from "./pages/navbar/navbar.tsx";
 
 function App() {
   return (
@@ -12,9 +13,11 @@ function App() {
         minW={"100vw"}
         alignItems={"center"}
         backgroundColor={"black"}
+        position={"relative"}
       >
         <Home />
         <CurrentList />
+        <Navbar />
       </Stack>
     </>
   );

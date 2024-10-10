@@ -1,4 +1,4 @@
-import { Stack, Text, Spacer } from "@chakra-ui/react";
+import { Stack, Text, Spacer, Box } from "@chakra-ui/react";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import Lists from "../../dummy.tsx";
 import CurrTemplate from "../../components/currListTemplate.tsx";
@@ -14,8 +14,16 @@ const CurrentList = () => {
       bgColor={"white"}
       p={"1.25rem"}
     >
-      <Stack color={"black"} direction={"row"} mt={"1rem"} align={"center"}>
-        <FaChevronCircleLeft fontSize={"1.9rem"} />
+      <Stack
+        color={"black"}
+        direction={"row"}
+        mt={"1rem"}
+        align={"center"}
+        mb={"0.8rem"}
+      >
+        <Box>
+          <FaChevronCircleLeft fontSize={"1.9rem"} />
+        </Box>
         <Text fontSize={"1.2rem"} fontWeight={"700"} ml={"0.5rem"}>
           Current List
         </Text>

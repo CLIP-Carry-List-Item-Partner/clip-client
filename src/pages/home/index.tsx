@@ -1,4 +1,4 @@
-import { Stack, Text, Image, Spacer } from "@chakra-ui/react";
+import { Stack, Text, Image, Spacer, Button } from "@chakra-ui/react";
 import dyhb from "../../assets/dyhb.png";
 import pb from "../../assets/Powerbank.svg";
 import { FaCircle } from "react-icons/fa";
@@ -42,6 +42,7 @@ const Home = () => {
             borderRadius={"full"}
             boxSize={"2.75rem"}
             objectFit={"cover"}
+            cursor={"pointer"}
           />
         </Stack>
         {/* <-- Tagline, Nama, Profile End --> */}
@@ -67,25 +68,22 @@ const Home = () => {
               Device Status
             </Text>
             {isActive ? (
-              <Stack
-                direction={"row"}
-                h={"2rem"}
-                bgColor={"#f0e13d"}
-                justify={"center"}
-                align={"center"}
-                borderRadius={"lg"}
-                onClick={handleStatusClick}
-                cursor={"pointer"}
-              >
-                <Text
+              <Stack direction={"row"} justify={"center"} align={"center"}>
+                <Button
+                  h={"2rem"}
+                  w={"full"}
+                  onClick={handleStatusClick}
+                  cursor={"pointer"}
+                  bgColor={"#f0e13d"}
+                  _hover={{ bgColor: "#a29609" }}
                   fontWeight={"400"}
                   fontSize={"0.75rem"}
-                  ml={"1rem"}
-                  pr={"0.25rem"}
                 >
                   Active
-                </Text>
-                <FaCircle color={"#a29609"} fontSize={"0.5rem"} />
+                  <Stack mt={"0.15rem"} ml={"0.5rem"}>
+                    <FaCircle color={"#a29609"} fontSize={"0.5rem"} />
+                  </Stack>
+                </Button>
               </Stack>
             ) : (
               <Stack
@@ -97,23 +95,24 @@ const Home = () => {
               >
                 <Text
                   bgColor={"#9d9d9d"}
-                  color={"##000000B2"}
+                  color={"#000000B2"}
                   borderRadius={"lg"}
                   py={"0.3rem"}
-                  px={"0.8rem"}
+                  px={"0.7rem"}
                 >
                   Inactive
                 </Text>
-                <Text
+                <Button
                   bgColor={"#f0e13d"}
-                  borderRadius={"lg"}
-                  py={"0.3rem"}
-                  px={"1rem"}
                   onClick={handleStatusClick}
                   cursor={"pointer"}
+                  size={"sm"}
+                  h={"1.7rem"}
+                  borderRadius={"lg"}
+                  _hover={{ bgColor: "#a29609" }}
                 >
                   Pair
-                </Text>
+                </Button>
               </Stack>
             )}
           </Stack>
@@ -148,14 +147,15 @@ const Home = () => {
             {Lists[i].items.slice(0, 3).map((item, index) => (
               <CurrTemplate key={index} {...item} />
             ))}
-            <Text
-              textAlign={"center"}
+            <Button
+              variant={"link"}
               color={"#000000B2"}
-              fontSize={"0.7rem"}
-              fontWeight={"400"}
+              fontSize={"0.75rem"}
+              textAlign={"center"}
+              mt={"0.25rem"}
             >
               View All Items
-            </Text>
+            </Button>
           </Stack>
         </Stack>
         {/* <-- Current List End --> */}
@@ -170,9 +170,15 @@ const Home = () => {
             <Text fontWeight={"700"} fontSize={"1.2rem"}>
               Your List
             </Text>
-            <Text fontWeight={"500"} fontSize={"0.75rem"}>
+            <Button
+              variant={"link"}
+              color={"#0B1215"}
+              fontSize={"0.75rem"}
+              fontWeight={"500"}
+              textAlign={"center"}
+            >
               View All
-            </Text>
+            </Button>
           </Stack>
         </Stack>
         {Lists.map((list, index) => (

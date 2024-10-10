@@ -8,6 +8,10 @@ const Lists = [
       { name: "Botol Minum", id: "#XXX69$3X" },
       { name: "Powerbank", id: "#XXX69420" },
       { name: "Tissue", id: "#XXX11111" },
+      { name: "Masker", id: "#XXX11111" },
+      { name: "Hand Sanitizer", id: "#XXX11111" },
+      { name: "Kunci Motor", id: "#XXX11111" },
+      { name: "Kunci Rumah ", id: "#XXX11111" },
     ],
   },
   {
