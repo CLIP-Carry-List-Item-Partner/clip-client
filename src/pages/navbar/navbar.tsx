@@ -3,6 +3,7 @@ import home from "../../assets/home.svg";
 import list from "../../assets/list.svg";
 import item from "../../assets/item.svg";
 import profile from "../../assets/profile.svg";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
@@ -28,22 +29,30 @@ const Navbar = () => {
         pb={"0.5rem"}
         borderRadius={"2xl"}
       >
-        <Stack gap={0}>
-          <Image src={home} alt="home" boxSize={"1.5rem"} />
-          <Text fontSize={"0.5rem"}>Home</Text>
-        </Stack>
-        <Stack gap={0}>
-          <Image src={list} alt="list" boxSize={"1.5rem"} />
-          <Text fontSize={"0.5rem"}>List</Text>
-        </Stack>
-        <Stack gap={0}>
-          <Image src={item} alt="item" boxSize={"1.5rem"} />
-          <Text fontSize={"0.5rem"}>Item</Text>
-        </Stack>
-        <Stack gap={0}>
-          <Image src={profile} alt="profile" boxSize={"1.5rem"} />
-          <Text fontSize={"0.5rem"}>Profile</Text>
-        </Stack>
+        <Link to="/">
+          <Stack gap={0}>
+            <Image src={home} alt="home" boxSize={"1.5rem"} />
+            <Text fontSize={"0.5rem"}>Home</Text>
+          </Stack>
+        </Link>
+        <Link to="/list">
+          <Stack gap={0}>
+            <Image src={list} alt="list" boxSize={"1.5rem"} />
+            <Text fontSize={"0.5rem"}>List</Text>
+          </Stack>
+        </Link>
+        <Link to="/item">
+          <Stack gap={0}>
+            <Image src={item} alt="item" boxSize={"1.5rem"} />
+            <Text fontSize={"0.5rem"}>Item</Text>
+          </Stack>
+        </Link>
+        <Link to="/profile">
+          <Stack gap={0}>
+            <Image src={profile} alt="profile" boxSize={"1.5rem"} />
+            <Text fontSize={"0.5rem"}>Profile</Text>
+          </Stack>
+        </Link>
       </Stack>
     </Stack>
   );
