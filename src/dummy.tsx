@@ -1,7 +1,7 @@
 const Lists = [
   {
     listname: "Tas Hari Senin",
-    lastUpdated: "7 Oct 2024",
+    lastUpdated: "07/10/2024",
     items: [
       { name: "Adapter Charger", id: "#XXX69420" },
       { name: "Medkit", id: "#XXX66644" },
@@ -16,13 +16,13 @@ const Lists = [
   },
   {
     listname: "Tas Kuliah Santai",
-    lastUpdated: "3 Oct 2024",
+    lastUpdated: "3/10/2024",
     items: [
       { name: "Massage Gun", id: "#XXX55555" },
       { name: "Tissue", id: "#XXX11111" },
     ],
   },
-  { listname: "Tas Hari Bele", lastUpdated: "19 Oct 2024", items: [] },
+  { listname: "Tas Hari Bele", lastUpdated: "19/10/2024", items: [] },
 ];
 
 export default Lists;

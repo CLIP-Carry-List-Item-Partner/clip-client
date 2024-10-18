@@ -174,6 +174,8 @@ const Home = () => {
               Your List
             </Text>
             <Button
+              as={Link}
+              to="/list"
               variant={"link"}
               color={"#0B1215"}
               fontSize={"0.75rem"}
@@ -183,7 +185,7 @@ const Home = () => {
               View All
             </Button>
           </Stack>
-          {Lists.map((list, index) => (
+          {Lists.slice(0, 3).map((list, index) => (
             <YourTemplate key={index} {...list} />
           ))}
         </Stack>

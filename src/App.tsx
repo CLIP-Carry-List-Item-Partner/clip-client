@@ -2,16 +2,18 @@ import { useState } from "react";
 import "./App.css";
 import { Stack, Button, Image, Text } from "@chakra-ui/react";
 import Home from "./pages/home";
-import CurrentList from "./pages/currentList/currentList.tsx";
+import CurrentList from "./pages/list/currentList.tsx";
 import Navbar from "./pages/navbar/navbar.tsx";
 import Login from "./pages/onboarding/login.tsx";
-import BeforeLoginList from "./pages/beforeLogin/beforeLoginList.tsx";
+import BeforeLoginList from "./pages/onboarding/beforeLoginList.tsx";
+import EditList from "./pages/list/editList.tsx";
+import List from "./pages/list/list.tsx";
 import { Route, Routes, useLocation } from "react-router-dom";
 
 function App() {
   const location = useLocation();
 
-  const noNavbar = ["/login", "/currentList", "/beforeLoginList"]; // path yang tidak memerlukan Navbar
+  const noNavbar = ["/login", "/currentList", "/beforeLoginList", "/editList"]; // path yang tidak memerlukan Navbar
   return (
     <>
       <Stack
@@ -28,6 +30,8 @@ function App() {
           <Route path="/currentList" element={<CurrentList />} />
           <Route path="/login" element={<Login />} />
           <Route path="/beforeLoginList" element={<BeforeLoginList />} />
+          <Route path="/editList" element={<EditList />} />
+          <Route path="/list" element={<List />} />
         </Routes>
       </Stack>
     </>
