@@ -15,6 +15,7 @@ const Navbar = () => {
       bottom={"0.5rem"}
       lineHeight={"1.2rem"}
       p={"1.25rem"}
+      zIndex={"1"}
     >
       <Stack
         direction={"row"}

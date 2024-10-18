@@ -18,17 +18,17 @@ const SavedList = ({
         px={"1rem"}
         pt={"1rem"}
       >
-        <Text fontWeight={"600"} color={"black"} fontSize={"1rem"}>
+        <Text fontWeight={600} color={"black"} fontSize={"1rem"}>
           {listname}
         </Text>
         <Spacer />
-        <Text fontWeight={"400"} color={"#00000080"} fontSize={"0.7rem"}>
+        <Text fontWeight={400} color={"#00000080"} fontSize={"0.7rem"}>
           Updated, {lastUpdated}
         </Text>
       </Stack>
       <Stack overflowX={"auto"} direction={"row"} px={"1rem"} pb={"1rem"}>
         <Stack
-          fontWeight={"500"}
+          fontWeight={400}
           fontSize={"0.75rem"}
           direction={"row"}
           justify={"start"}

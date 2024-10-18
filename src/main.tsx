@@ -8,7 +8,7 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 const theme = extendTheme({
   fonts: {
-    Pjs: `'PlusJakartaSans', sans-serif`,
+    Pjs: `'Plus Jakarta Sans', sans-serif`,
   },
 });
 

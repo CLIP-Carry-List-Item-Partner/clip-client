@@ -4,9 +4,14 @@ import { Stack, Button, Image, Text } from "@chakra-ui/react";
 import Home from "./pages/home";
 import CurrentList from "./pages/currentList/currentList.tsx";
 import Navbar from "./pages/navbar/navbar.tsx";
-import { Route, Routes } from "react-router-dom";
+import Login from "./pages/onboarding/login.tsx";
+import BeforeLoginList from "./pages/beforeLogin/beforeLoginList.tsx";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 function App() {
+  const location = useLocation();
+
+  const noNavbar = ["/login", "/currentList", "/beforeLoginList"]; // path yang tidak memerlukan Navbar
   return (
     <>
       <Stack
@@ -17,10 +22,12 @@ function App() {
         position={"relative"}
         fontFamily={"Pjs"}
       >
-        <Navbar />
+        {!noNavbar.includes(location.pathname) && <Navbar />}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/currentList" element={<CurrentList />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/beforeLoginList" element={<BeforeLoginList />} />
         </Routes>
       </Stack>
     </>
