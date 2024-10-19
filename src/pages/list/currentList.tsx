@@ -6,16 +6,16 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 const CurrentList = () => {
-  const [isZonk, setIsZonk] = useState(false); // Liat ada item apa nggak di List dummy data
+  const [isEmpty, setIsEmpty] = useState(false); // Liat ada item apa nggak di List dummy data
   let i = 1; // Index List dummy data
 
   // cek apakah ada item di List dummy data sesuai index
   useEffect(() => {
     const hasItems = Lists[i].items.length > 0;
     if (!hasItems) {
-      setIsZonk(true);
+      setIsEmpty(true);
     } else {
-      setIsZonk(false);
+      setIsEmpty(false);
     }
   });
 
@@ -29,6 +29,7 @@ const CurrentList = () => {
       bgColor={"white"}
       p={"1.25rem"}
     >
+      {/* <-- Header Start --> */}
       <Stack
         color={"black"}
         direction={"row"}
@@ -57,7 +58,9 @@ const CurrentList = () => {
           </Text>
         </Button>
       </Stack>
-      {isZonk ? (
+      {/* <-- Header End --> */}
+      {/* <-- Current List Start --> */}
+      {isEmpty ? (
         <Stack bgColor={"#eeeeee"} borderRadius={"2xl"} p={"1rem"} h={"45rem"}>
           <Stack
             border={"1px"}
@@ -85,6 +88,7 @@ const CurrentList = () => {
           ))}
         </Stack>
       )}
+      {/* <-- Current List End --> */}
     </Stack>
   );
 };

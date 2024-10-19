@@ -13,7 +13,7 @@ const CurrentList = ({ name, id }: { name: string; id: string }) => {
     >
       <Stack direction={"row"} align={"center"}>
         <FaCircle color={"#f0e13d"} fontSize={"1.25rem"} />
-        <Text fontSize={"0.9rem"} fontWeight={600} ml={"0.25rem"}>
+        <Text w={"9rem"} fontSize={"0.9rem"} fontWeight={600} ml={"0.25rem"}>
           {name}
         </Text>
       </Stack>

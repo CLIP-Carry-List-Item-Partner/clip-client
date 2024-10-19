@@ -8,10 +8,11 @@ import Login from "./pages/onboarding/login.tsx";
 import BeforeLoginList from "./pages/onboarding/beforeLoginList.tsx";
 import EditList from "./pages/list/editList.tsx";
 import List from "./pages/list/list.tsx";
+import Item from "./pages/item/item.tsx";
 import { Route, Routes, useLocation } from "react-router-dom";
 
 function App() {
-  const location = useLocation();
+  const location = useLocation(); // Get current location
 
   const noNavbar = ["/login", "/currentList", "/beforeLoginList", "/editList"]; // path yang tidak memerlukan Navbar
   return (
@@ -24,7 +25,8 @@ function App() {
         position={"relative"}
         fontFamily={"Pjs"}
       >
-        {!noNavbar.includes(location.pathname) && <Navbar />}
+        {/* Tampilkan Navbar jika path diluar array noNavbar */}
+        {!noNavbar.includes(location.pathname) && <Navbar />}{" "}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/currentList" element={<CurrentList />} />
@@ -32,6 +34,7 @@ function App() {
           <Route path="/beforeLoginList" element={<BeforeLoginList />} />
           <Route path="/editList" element={<EditList />} />
           <Route path="/list" element={<List />} />
+          <Route path="/item" element={<Item />} />
         </Routes>
       </Stack>
     </>

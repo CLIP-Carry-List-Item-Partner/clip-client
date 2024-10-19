@@ -10,14 +10,15 @@ const SavedList = ({
   lastUpdated: string;
   items: { name: string; id: string }[];
 }) => {
-  const [isZonk, setIsZonk] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false); //
 
+  // cek apakah items kosong
   useEffect(() => {
     const hasItems = items.length > 0;
     if (!hasItems) {
-      setIsZonk(true);
+      setIsEmpty(true);
     } else {
-      setIsZonk(false);
+      setIsEmpty(false);
     }
   });
 
@@ -38,7 +39,8 @@ const SavedList = ({
           Updated, {lastUpdated}
         </Text>
       </Stack>
-      {isZonk ? (
+      {/* tampilan tergantung ada item atau tidak */}
+      {isEmpty ? (
         <Stack mb={"1rem"} px={"1rem"}>
           <Stack
             border={"1px"}
@@ -75,6 +77,7 @@ const SavedList = ({
                 <Text>{item.name}</Text>
               </Stack>
             ))}
+            {/* end */}
           </Stack>
         </Stack>
       )}

@@ -30,6 +30,7 @@ const Login = () => {
               </Text>
             </Stack>
           </Stack>
+          {/* <-- Button Start --> */}
           <Stack mt={"10%"}>
             <Button
               bgColor={"white"}
@@ -58,6 +59,7 @@ const Login = () => {
               </Text>
             </Button>
           </Stack>
+          {/* <-- Button End --> */}
         </Stack>
       </Stack>
     </>

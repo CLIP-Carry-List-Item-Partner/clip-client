@@ -2,19 +2,19 @@ import { Stack, Text, Button } from "@chakra-ui/react";
 import Lists from "../../dummy.tsx";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import ItemTemplate from "../../components/itemTemplate.tsx";
+import ItemTemplate1 from "../../components/itemTemplate1.tsx";
 
 const BeforeLoginList = () => {
-  const [isZonk, setIsZonk] = useState(false); // Liat ada item apa nggak di List dummy data
+  const [isEmpty, setIsEmpty] = useState(false); // Liat ada item apa nggak di List dummy data
   let i = 2; // Index List dummy data
 
   // cek apakah ada item di List dummy data sesuai index
   useEffect(() => {
     const hasItems = Lists[i].items.length > 0;
     if (!hasItems) {
-      setIsZonk(true);
+      setIsEmpty(true);
     } else {
-      setIsZonk(false);
+      setIsEmpty(false);
     }
   });
 
@@ -38,7 +38,7 @@ const BeforeLoginList = () => {
         h={"25rem"}
         overflowY={"auto"}
       >
-        {isZonk ? (
+        {isEmpty ? (
           <Stack
             bgColor={"white"}
             border={"1px"}
@@ -70,7 +70,7 @@ const BeforeLoginList = () => {
           </Stack>
         ) : (
           Lists[i].items.map((item, index) => (
-            <ItemTemplate key={index} {...item} />
+            <ItemTemplate1 key={index} {...item} />
           ))
         )}
       </Stack>
@@ -83,7 +83,7 @@ const BeforeLoginList = () => {
           p={"0.2rem"}
           cursor={"pointer"}
           _hover={{ bgColor: "blackAlpha.800" }}
-          isDisabled={isZonk}
+          isDisabled={isEmpty}
         >
           <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
             Login to save your list

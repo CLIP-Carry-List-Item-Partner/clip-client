@@ -10,6 +10,8 @@ import { Link } from "react-router-dom";
 
 const Home = () => {
   const [isActive, setIsActive] = useState(false);
+
+  // Handle status button click buat pairing
   const handleStatusClick = () => {
     setIsActive(!isActive);
   };
@@ -70,6 +72,7 @@ const Home = () => {
             >
               Device Status
             </Text>
+            {/* tampilan tergantung sudah pair atau belum */}
             {isActive ? (
               <Stack direction={"row"} justify={"center"} align={"center"}>
                 <Button
@@ -118,6 +121,7 @@ const Home = () => {
                 </Button>
               </Stack>
             )}
+            {/* end */}
           </Stack>
           <Spacer />
           <Image src={pb} alt="pb" maxH={"100%"} />

@@ -3,9 +3,41 @@ import home from "../../assets/home.svg";
 import list from "../../assets/list.svg";
 import item from "../../assets/item.svg";
 import profile from "../../assets/profile.svg";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const Navbar = () => {
+  const location = useLocation(); // Get current location
+  const [activeLink, setActiveLink] = useState(location.pathname); // Set active link (/)
+
+  // Set active link based on current location
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location]);
+
+  const links = [
+    {
+      route: "/",
+      label: "Home",
+      icon: home,
+    },
+    {
+      route: "/list",
+      label: "List",
+      icon: list,
+    },
+    {
+      route: "/item",
+      label: "Item",
+      icon: item,
+    },
+    {
+      route: "/profile",
+      label: "Profile",
+      icon: profile,
+    },
+  ];
+
   return (
     <Stack
       minW={"320px"}
@@ -30,30 +62,23 @@ const Navbar = () => {
         pb={"0.5rem"}
         borderRadius={"2xl"}
       >
-        <Link to="/">
-          <Stack gap={0}>
-            <Image src={home} alt="home" boxSize={"1.5rem"} />
-            <Text fontSize={"0.5rem"}>Home</Text>
-          </Stack>
-        </Link>
-        <Link to="/list">
-          <Stack gap={0}>
-            <Image src={list} alt="list" boxSize={"1.5rem"} />
-            <Text fontSize={"0.5rem"}>List</Text>
-          </Stack>
-        </Link>
-        <Link to="/item">
-          <Stack gap={0}>
-            <Image src={item} alt="item" boxSize={"1.5rem"} />
-            <Text fontSize={"0.5rem"}>Item</Text>
-          </Stack>
-        </Link>
-        <Link to="/profile">
-          <Stack gap={0}>
-            <Image src={profile} alt="profile" boxSize={"1.5rem"} />
-            <Text fontSize={"0.5rem"}>Profile</Text>
-          </Stack>
-        </Link>
+        {links.map((link, index) => (
+          <Link
+            to={link.route}
+            key={index}
+            onClick={() => setActiveLink(link.route)}
+          >
+            {/* Set opacity based on active link */}
+            <Stack gap={0} opacity={activeLink == link.route ? 1 : 0.5}>
+              <Image
+                src={link.icon}
+                alt={link.label.toLowerCase()}
+                boxSize={"1.5rem"}
+              />
+              <Text fontSize={"0.5rem"}>{link.label}</Text>
+            </Stack>
+          </Link>
+        ))}
       </Stack>
     </Stack>
   );

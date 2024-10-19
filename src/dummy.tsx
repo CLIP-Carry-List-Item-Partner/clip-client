@@ -1,3 +1,5 @@
+//buat dummy data
+
 const Lists = [
   {
     listname: "Tas Hari Senin",
@@ -23,6 +25,13 @@ const Lists = [
     ],
   },
   { listname: "Tas Hari Bele", lastUpdated: "19/10/2024", items: [] },
+];
+
+export const Items = [
+  { name: "Adapter Charger", id: "#XXX69420" },
+  { name: "Medkit", id: "#XXX66644" },
+  { name: "Botol Minum", id: "#XXX69$3X" },
+  { name: "Powerbank", id: "#XXX69420" },
 ];
 
 export default Lists;
