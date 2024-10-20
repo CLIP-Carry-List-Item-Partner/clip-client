@@ -1,17 +1,87 @@
-import { Stack, Text, Image, Spacer, Button } from "@chakra-ui/react";
-import dyhb from "@/assets/dyhb.png";
+import {
+  Stack,
+  Text,
+  Image,
+  Spacer,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuGroup,
+  MenuDivider,
+  useToast,
+} from "@chakra-ui/react";
 import pb from "@/assets/Powerbank.svg";
 import CurrTemplate from "@/components/currListTemplate.tsx";
-import YourTemplate from "@/components/saveListTemplate.tsx";
+import AllList from "@/components/allListTemplate";
 import { useState, useEffect } from "react";
 import Lists from "@/dummy.tsx";
 import { useNavigate } from "@/router";
 import useAuth from "@/hooks/useAuth";
 import { Outlet, useLocation, Link } from "react-router-dom";
 import useSWR from "swr";
+import { HiOutlineLogout } from "react-icons/hi";
+import useApi, { ResponseModel, useToastErrorHandler } from "@/hooks/useApi";
+import { z } from "zod";
 
 const Home = () => {
   const auth = useAuth();
+  const nav = useNavigate();
+  const errorHandler = useToastErrorHandler();
+  const toast = useToast();
+  const api = useApi();
+
+  type List = {
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+
+  type Item = {
+    id: string;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+
+  const listData = useSWR("/list");
+
+  const currentList = listData.data?.data?.sort(
+    (a: List, b: List) =>
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  )[0];
+
+  console.log(currentList);
+
+  const allList = listData.data?.data;
+
+  const itemData = useSWR<Item[]>("/item");
+
+  useEffect(() => {
+    if (auth.status === "unauthenticated") {
+      toast({
+        title: "Please login to continue",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      nav("/auth/login");
+      return;
+    }
+
+    // if (auth.status === "authenticated") {
+    //   toast({
+    //     title: "Welcome back!",
+    //     status: "success",
+    //     duration: 3000,
+    //     isClosable: true,
+    //   });
+    //   nav("/clip");
+    //   return;
+    // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth]);
 
   const [isActive, setIsActive] = useState(false);
   const handleStatusClick = () => {
@@ -32,7 +102,7 @@ const Home = () => {
       >
         {/* <-- Nama, Email, Profile Start --> */}
         <Stack direction={"row"} align={"center"}>
-          <Stack color={"black"} gap={0}>
+          <Stack color={"black"} gap={"0.4rem"}>
             <Text fontWeight={700} fontSize={"1.2rem"}>
               {auth.user?.name}
             </Text>
@@ -41,14 +111,36 @@ const Home = () => {
             </Text>
           </Stack>
           <Spacer />
-          <Image
-            src={dyhb}
-            alt="dyhb"
-            borderRadius={"full"}
-            boxSize={"2.75rem"}
-            objectFit={"cover"}
-            cursor={"pointer"}
-          />
+          <Menu>
+            <MenuButton>
+              <Image
+                src={auth.user?.picture}
+                alt="profile"
+                borderRadius={"full"}
+                boxSize={"2.75rem"}
+                objectFit={"cover"}
+                cursor={"pointer"}
+              />
+            </MenuButton>
+            <MenuList
+              p={"0.5rem"}
+              backdropBlur={"xl"}
+              opacity={"50%"}
+              shadow={"lg"}
+            >
+              <MenuGroup title="Profile">
+                <MenuItem fontWeight={"normal"}>My Account</MenuItem>
+              </MenuGroup>
+              <MenuDivider />
+              <MenuItem
+                icon={<HiOutlineLogout size="1.5em" />}
+                onClick={() => auth.logout()}
+                fontWeight={"bold"}
+              >
+                Logout
+              </MenuItem>
+            </MenuList>
+          </Menu>
         </Stack>
         {/* <-- Tagline, Nama, Profile End --> */}
         {/* <-- Device Status Start --> */}
@@ -125,6 +217,7 @@ const Home = () => {
           <Image src={pb} alt="pb" maxH={"100%"} />
         </Stack>
         {/* <-- Device Status End --> */}
+
         {/* <-- Current List Start --> */}
         <Stack color={"black"} mt={"0.75rem"}>
           <Stack
@@ -143,15 +236,26 @@ const Home = () => {
               px={"0.5rem"}
               borderColor={"#777777"}
             >
-              <Text fontWeight={500} color={"#777777"} fontSize={"0.75rem"}>
-                {Lists[i].listname}
+              <Text fontSize={"0.8rem"} fontWeight={"normal"}>
+                {currentList?.name}
               </Text>
             </Stack>
           </Stack>
           <Stack bgColor={"#eeeeee"} borderRadius={"2xl"} p={"1rem"}>
-            {Lists[i].items.slice(0, 3).map((item, index) => (
-              <CurrTemplate key={index} {...item} />
-            ))}
+            {/* Kondisi loading saat data sedang di-fetch */}
+            {!itemData.data && !itemData.error && <Text>Loading items...</Text>}
+
+            {/* {!currentList?.items} */}
+
+            {/* Kondisi error jika fetching data gagal */}
+            {itemData.error && <Text color="red">Failed to load items</Text>}
+
+            {/* Pastikan data tersedia dan valid sebelum menggunakan map */}
+            {/* {Array.isArray(itemData.data) &&
+              itemData.data
+                .slice(0, 3)
+                .map((item, index) => <CurrTemplate key={index} {...item} />)} */}
+
             <Button
               as={Link}
               to="/currentList"
@@ -167,6 +271,7 @@ const Home = () => {
           </Stack>
         </Stack>
         {/* <-- Current List End --> */}
+
         {/* <-- Saved List start --> */}
         <Stack color={"black"} mt={"0.75rem"}>
           <Stack
@@ -190,9 +295,16 @@ const Home = () => {
               View All
             </Button>
           </Stack>
-          {Lists.slice(0, 3).map((list, index) => (
-            <YourTemplate key={index} {...list} />
-          ))}
+          {listData && (
+            <AllList
+              listData={{
+                name: listData.data?.name,
+                // createdAt: listData.data?.createdAt,
+                updatedAt: listData.data?.updatedAt,
+                items: listData.data?.items,
+              }}
+            />
+          )}
         </Stack>
         {/* <-- Saved List end -->     */}
       </Stack>

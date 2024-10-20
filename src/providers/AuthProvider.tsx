@@ -31,10 +31,10 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const errorHandler = useToastErrorHandler();
 
-  const googleCallback = async (token: string) => {
+  const googleCallback = async (code: string) => {
     await axios.post<ResponseModel>(
       baseUrl + "/auth/google/callback",
-      { token },
+      { code },
       { withCredentials: true }
     );
 

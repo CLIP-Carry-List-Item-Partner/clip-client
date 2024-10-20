@@ -24,9 +24,10 @@ const GoogleCallback = () => {
 
     if (auth.status === "unauthenticated") {
       const searchParams = new URLSearchParams(loc.search);
-      const token = searchParams.get("token");
+      const code = searchParams.get("code");
+      const error = searchParams.get("error");
 
-      if (!token) {
+      if (!code) {
         toast({
           title: "Error",
           description: "Invalid token",
@@ -37,8 +38,19 @@ const GoogleCallback = () => {
         return nav("/auth/login");
       }
 
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Google authentication failed",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return nav("/auth/login");
+      }
+
       auth
-        .googleCallback(token)
+        .googleCallback(code)
         .then(() => {
           toast({
             title: "Welcome back!",

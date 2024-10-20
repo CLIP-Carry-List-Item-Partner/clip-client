@@ -102,7 +102,10 @@ export const useFetcher = () => {
         withCredentials: true,
       })
       .then((resp) => resp.data)
-      .catch(toastErrorHandler);
+      .catch((err) => {
+        toastErrorHandler(err);
+        throw err;
+      });
   }
 }
 

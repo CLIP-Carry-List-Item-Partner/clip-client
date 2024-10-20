@@ -1,25 +1,21 @@
 import { Stack, Text, Spacer } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 
-const SavedList = ({
-  listname,
-  lastUpdated,
-  items,
+const AllList = ({
+  listData,
 }: {
-  listname: string;
-  lastUpdated: string;
-  items: { name: string; id: string }[];
+  listData: {
+    name: string;
+    updatedAt: string;
+    items?: { name: string; id: string }[];
+  };
 }) => {
   const [isZonk, setIsZonk] = useState(false);
 
   useEffect(() => {
-    const hasItems = items.length > 0;
-    if (!hasItems) {
-      setIsZonk(true);
-    } else {
-      setIsZonk(false);
-    }
-  });
+    const hasItems = listData.items && listData.items.length > 0;
+    setIsZonk(!hasItems);
+  }, [listData.items]);
 
   return (
     <Stack bgColor={"#eeeeee"} borderRadius={"2xl"} my={"0.2rem"}>
@@ -30,12 +26,12 @@ const SavedList = ({
         px={"1rem"}
         pt={"1rem"}
       >
-        <Text fontWeight={600} color={"black"} fontSize={"1rem"}>
-          {listname}
+        <Text fontWeight={"medium"} color={"black"} fontSize={"1rem"}>
+          {listData.name || "List Name"}
         </Text>
         <Spacer />
         <Text fontWeight={400} color={"#00000080"} fontSize={"0.7rem"}>
-          Updated, {lastUpdated}
+          {listData.updatedAt || ""}
         </Text>
       </Stack>
       {isZonk ? (
@@ -54,6 +50,7 @@ const SavedList = ({
           </Stack>
         </Stack>
       ) : (
+        // Show list items
         <Stack overflowX={"auto"} direction={"row"} px={"1rem"} pb={"1rem"}>
           <Stack
             fontWeight={400}
@@ -62,7 +59,7 @@ const SavedList = ({
             justify={"start"}
             align={"center"}
           >
-            {items.map((item, index) => (
+            {(listData.items || []).map((item, index) => (
               <Stack
                 key={index}
                 px={"1rem"}
@@ -82,4 +79,4 @@ const SavedList = ({
   );
 };
 
-export default SavedList;
+export default AllList;
