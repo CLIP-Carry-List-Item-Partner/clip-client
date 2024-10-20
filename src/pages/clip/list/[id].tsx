@@ -1,13 +1,12 @@
 import { Stack, Text, Spacer, Box, Button, Input } from "@chakra-ui/react";
 import { FaChevronCircleLeft } from "react-icons/fa";
-import Lists from "../../dummy.tsx";
+import Lists from "@/dummy.tsx";
 import { Link } from "react-router-dom";
-import ItemTemplate from "../../components/itemTemplate.tsx";
+import ItemTemplate from "@/components/itemTemplate.tsx";
 import { useState, useEffect } from "react";
 
-const editList = () => {
+const EditList = () => {
   const [isZonk, setIsZonk] = useState(false); // Liat ada item apa nggak di List dummy data
-  let i = 1; // Index List dummy data
 
   // cek apakah ada item di List dummy data sesuai index
   useEffect(() => {
@@ -18,6 +17,9 @@ const editList = () => {
       setIsZonk(false);
     }
   });
+
+  let i = 1; // Index List dummy data
+
   return (
     <Stack
       minW={"320px"}
@@ -157,4 +159,4 @@ const editList = () => {
   );
 };
 
-export default editList;
+export default EditList;

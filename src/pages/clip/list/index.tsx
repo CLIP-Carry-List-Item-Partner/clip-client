@@ -1,6 +1,6 @@
 import { Stack, Text, Spacer, Box, Button } from "@chakra-ui/react";
-import Lists from "../../dummy.tsx";
-import SavedTemplate from "../../components/saveListTemplate.tsx";
+import Lists from "@/dummy.tsx";
+import SavedTemplate from "@/components/saveListTemplate.tsx";
 import { Link } from "react-router-dom";
 import { GoPlus } from "react-icons/go";
 

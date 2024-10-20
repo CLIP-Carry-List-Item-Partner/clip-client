@@ -1,13 +1,18 @@
 import { Stack, Text, Image, Spacer, Button } from "@chakra-ui/react";
-import dyhb from "../../assets/dyhb.png";
-import pb from "../../assets/Powerbank.svg";
-import CurrTemplate from "../../components/currListTemplate.tsx";
-import YourTemplate from "../../components/saveListTemplate.tsx";
-import { useState } from "react";
-import Lists from "../../dummy.tsx";
-import { Link } from "react-router-dom";
+import dyhb from "@/assets/dyhb.png";
+import pb from "@/assets/Powerbank.svg";
+import CurrTemplate from "@/components/currListTemplate.tsx";
+import YourTemplate from "@/components/saveListTemplate.tsx";
+import { useState, useEffect } from "react";
+import Lists from "@/dummy.tsx";
+import { useNavigate } from "@/router";
+import useAuth from "@/hooks/useAuth";
+import { Outlet, useLocation, Link } from "react-router-dom";
+import useSWR from "swr";
 
 const Home = () => {
+  const auth = useAuth();
+
   const [isActive, setIsActive] = useState(false);
   const handleStatusClick = () => {
     setIsActive(!isActive);
@@ -29,10 +34,10 @@ const Home = () => {
         <Stack direction={"row"} align={"center"}>
           <Stack color={"black"} gap={0}>
             <Text fontWeight={700} fontSize={"1.2rem"}>
-              Paelism Bennington
+              {auth.user?.name}
             </Text>
             <Text fontWeight={400} color={"#777777"} fontSize={"0.75rem"}>
-              rafael.herdani@gmail.com
+              {auth.user?.email}
             </Text>
           </Stack>
           <Spacer />
