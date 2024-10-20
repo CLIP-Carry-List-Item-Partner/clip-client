@@ -1,110 +1,151 @@
 import { Stack, Text, Button } from "@chakra-ui/react";
-import Lists from "../../dummy.tsx";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import ItemTemplate from "../../components/itemTemplate.tsx";
+import ItemTemplate1 from "@/components/itemTemplate1.tsx";
+import { BLECLIP } from "@/utils/useBLE"; // Adjust the import according to your project structure
 
 const BeforeLoginList = () => {
-  const [isZonk, setIsZonk] = useState(false); // Liat ada item apa nggak di List dummy data
-  let i = 2; // Index List dummy data
+  const [isZonk, setIsZonk] = useState(false);
+  const [scannedItems, setScannedItems] = useState<string[]>([]);
+  const [deletedItems, setDeletedItems] = useState<string[]>([]);
 
-  // cek apakah ada item di List dummy data sesuai index
+  const handleDelete = (id: string) => {
+    const updatedItems = scannedItems.filter((item) => item !== id);
+    setScannedItems(updatedItems);
+    setDeletedItems([...deletedItems, id]);
+    localStorage.setItem("scannedItems", JSON.stringify(updatedItems));
+  };
+
+  // Create an instance of BLECLIP
+  const bleClip = new BLECLIP();
+
+  // Load items from localStorage
+  const loadItemsFromStorage = () => {
+    const items = JSON.parse(localStorage.getItem("scannedItems") || "[]");
+    setScannedItems(items);
+    setIsZonk(items.length === 0);
+  };
+
   useEffect(() => {
-    const hasItems = Lists[i].items.length > 0;
-    if (!hasItems) {
-      setIsZonk(true);
-    } else {
-      setIsZonk(false);
+    loadItemsFromStorage();
+
+    // Set the add item callback
+    bleClip.setAddItemCallback(addItem);
+
+    // Load items every 1 seconds
+    const intervalId = setInterval(() => {
+      loadItemsFromStorage();
+    }, 2000);
+
+    const handleStorageChange = () => {
+      loadItemsFromStorage(); // Reload items from localStorage
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // Clean up the interval and event listener on component unmount
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener("storage", handleStorageChange);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Function to add a new item
+  const addItem = (newTagID: string) => {
+    if (!scannedItems.includes(newTagID)) {
+      const updatedItems = [...scannedItems, newTagID]; // Add new item to array
+      setScannedItems(updatedItems); // Update state
+      localStorage.setItem("scannedItems", JSON.stringify(updatedItems)); // Save to localStorage
     }
-  });
+  };
 
   return (
     <Stack
-      minW={"320px"}
       w={"full"}
-      maxW={"425px"}
-      minH={"100vh"}
-      p={"1.25rem"}
-      bgColor={"white"}
+      align={"center"}
+      justify={"center"}
+      fontFamily={"PlusJakartaSans"}
+      bgColor={"black"}
     >
-      <Text fontSize={"1.2rem"} fontWeight={"700"} ml={"0.5rem"} mb={"0.5rem"}>
-        New List
-      </Text>
-      {/* Isi List Start */}
       <Stack
-        bgColor={"#eeeeee"}
-        borderRadius={"2xl"}
-        p={"1rem"}
-        h={"25rem"}
-        overflowY={"auto"}
+        minW={"320px"}
+        w={"full"}
+        maxW={"425px"}
+        minH={"100vh"}
+        p={"1.25rem"}
+        bgColor={"white"}
       >
-        {isZonk ? (
-          <Stack
-            bgColor={"white"}
-            border={"1px"}
-            borderRadius={"xl"}
-            borderStyle={"dashed"}
-            my={"0.125rem"}
-            p={"0.75rem"}
-          >
+        <Text
+          fontSize={"1.2rem"}
+          fontWeight={"700"}
+          ml={"0.5rem"}
+          mb={"0.5rem"}
+        >
+          New List
+        </Text>
+        {/* List Items Start */}
+        <Stack
+          bgColor={"#eeeeee"}
+          borderRadius={"2xl"}
+          p={"1rem"}
+          h={"30rem"}
+          overflowY={"auto"}
+        >
+          {isZonk ? (
             <Stack
-              bgColor={"black"}
-              color={"white"}
-              px={"0.5rem"}
-              py={"0.2rem"}
-              borderRadius={"md"}
-              w={"fit-content"}
+              bgColor={"white"}
+              border={"1px"}
+              borderRadius={"xl"}
+              borderStyle={"dashed"}
+              my={"0.125rem"}
+              p={"0.75rem"}
             >
-              <Text
-                fontSize={"0.5rem"}
-                fontWeight={400}
-                letterSpacing={"0.05rem"}
-                color={"#F0E13D"}
+              <Stack
+                bgColor={"black"}
+                color={"white"}
+                px={"0.5rem"}
+                py={"0.2rem"}
+                borderRadius={"md"}
+                w={"fit-content"}
               >
-                #XXXXXXXXX
+                <Text
+                  fontSize={"0.5rem"}
+                  fontWeight={400}
+                  letterSpacing={"0.05rem"}
+                  color={"#F0E13D"}
+                >
+                  #XXXXXXXXX
+                </Text>
+              </Stack>
+              <Text fontSize={"0.9rem"} fontWeight={500}>
+                Your item will be listed here
               </Text>
             </Stack>
-            <Text fontSize={"0.9rem"} fontWeight={500}>
-              Your item will be listed here
-            </Text>
-          </Stack>
-        ) : (
-          Lists[i].items.map((item, index) => (
-            <ItemTemplate key={index} {...item} />
-          ))
-        )}
+          ) : (
+            scannedItems.map((item, index) => (
+              <ItemTemplate1
+                key={index}
+                name={`Tag ${index + 1}`}
+                id={item}
+                onDelete={handleDelete}
+              />
+            ))
+          )}
+        </Stack>
+        {/* List Items End */}
+        <Link to="/auth/login">
+          <Button
+            mt={"0.5rem"}
+            w={"full"}
+            bgColor={"black"}
+            color={"white"}
+            _hover={{ bgColor: "gray.800" }}
+          >
+            Back
+          </Button>
+        </Link>
       </Stack>
-      {/* Isi List End */}
-      {/* Button Start */}
-      <Stack mt={"auto"}>
-        <Button
-          bgColor={"black"}
-          borderRadius={"lg"}
-          p={"0.2rem"}
-          cursor={"pointer"}
-          _hover={{ bgColor: "blackAlpha.800" }}
-          isDisabled={isZonk}
-        >
-          <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
-            Login to save your list
-          </Text>
-        </Button>
-        <Button
-          as={Link}
-          to="/login"
-          bgColor={"white"}
-          borderRadius={"lg"}
-          border={"1px"}
-          p={"0.2rem"}
-          cursor={"pointer"}
-          _hover={{ bgColor: "whiteAlpha.900" }}
-        >
-          <Text fontSize={"0.8rem"} fontWeight={600} color={"#000000"}>
-            Cancel
-          </Text>
-        </Button>
-      </Stack>
-      {/* Button End */}
     </Stack>
   );
 };

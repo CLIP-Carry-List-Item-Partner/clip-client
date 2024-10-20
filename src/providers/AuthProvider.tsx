@@ -70,6 +70,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       })
       .catch((err: AxiosError<ResponseModel>) => {
         if (err.response?.status === 401) {
+          console.log("refreshing token");
           axios
             .get<ResponseModel>(baseUrl + "/auth/refresh", {
               withCredentials: true,

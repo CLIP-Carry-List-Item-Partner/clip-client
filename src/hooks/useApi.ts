@@ -4,7 +4,7 @@ import { useToast } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
 export const baseUrl =
-  import .meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
 
 export const instance = axios.create({
   baseURL: baseUrl,
@@ -42,8 +42,6 @@ const useApi = () => {
       async (error: AxiosError<ResponseModel>) => {
         if (error.response?.status === 401) {
           try {
-            // await auth.refresh();
-
             await axios.get<
               ResponseModel<{
                 email: string;

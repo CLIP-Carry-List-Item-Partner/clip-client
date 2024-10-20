@@ -5,10 +5,52 @@ import useAuth from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "@/router";
+import { BLECLIP } from "@/utils/useBLE";
 
 const Login = () => {
   const auth = useAuth();
   const nav = useNavigate();
+  const clipDevice = new BLECLIP();
+
+  const [imei, setImei] = useState("");
+  const [status, setStatus] = useState(false); // Track connection status
+  const [isClick, setIsClick] = useState(false);
+
+  const handleClick = () => {
+    setIsClick(true);
+    clipDevice.connectToBLE();
+  };
+
+  useEffect(() => {
+    clipDevice.onIMEIChange((newImei) => {
+      setImei(newImei);
+      setStatus(true); // Update status when connected
+
+      localStorage.setItem("imei", newImei);
+      localStorage.setItem("status", "true");
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // localStorage.removeItem("imei");
+    // localStorage.removeItem("status");
+
+    const storedImei = localStorage.getItem("imei");
+    const storedStatus = localStorage.getItem("status");
+
+    if (storedImei && storedStatus) {
+      setImei(storedImei);
+      setStatus(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!clipDevice.status) {
+      localStorage.removeItem("imei");
+      localStorage.removeItem("status");
+    }
+  });
 
   useEffect(() => {
     if (auth.status === "authenticated") {
@@ -18,52 +60,76 @@ const Login = () => {
   }, [auth]);
 
   return (
-    <>
-      <Stack
-        w={"full"}
-        align={"center"}
-        justify={"center"}
-        fontFamily={"PlusJakartaSans"}
-        bgColor={"black"}
-      >
-        <Stack minW={"320px"} maxW={"425px"} minH={"100vh"} bgColor={"#FAF9F6"}>
-          <Stack align={"center"}>
-            <Image src={onBoard} alt="onBoard"></Image>
-          </Stack>
-          <Stack p={"1.25rem"}>
-            <Stack textAlign={"center"} mt={"1rem"}>
-              <Text fontSize={"1.1rem"} fontWeight={700} color={"#A1A1A1"}>
-                CLIP
+    <Stack
+      w={"full"}
+      align={"center"}
+      justify={"center"}
+      fontFamily={"PlusJakartaSans"}
+      bgColor={"black"}
+    >
+      <Stack minW={"320px"} maxW={"425px"} minH={"100vh"} bgColor={"#FAF9F6"}>
+        <Stack align={"center"}>
+          <Image src={onBoard} alt="onBoard"></Image>
+        </Stack>
+        <Stack p={"1.25rem"}>
+          <Stack textAlign={"center"} mt={"1rem"}>
+            <Text fontSize={"1.1rem"} fontWeight={700} color={"#A1A1A1"}>
+              CLIP
+            </Text>
+            <Stack gap={0}>
+              <Text fontSize={"1.2rem"} fontWeight={700} color={"#000000"}>
+                You're almost there!
               </Text>
-              <Stack gap={0}>
-                <Text fontSize={"1.2rem"} fontWeight={700} color={"#000000"}>
-                  You're almost there!
-                </Text>
-                <Text fontSize={"1rem"} fontWeight={500} color={"#00000050"}>
-                  Scan your item now to begin
+              <Text fontSize={"1rem"} fontWeight={500} color={"#00000050"}>
+                Scan your item now to begin
+              </Text>
+            </Stack>
+
+            {/* Menampilkan IMEI dari state */}
+            {status ? (
+              <Text
+                fontSize={"0.8rem"}
+                fontWeight={"medium"}
+                color={"black"}
+                mt={"2rem"}
+                alignSelf={"center"}
+              >
+                Connected to CLIP {imei}
+              </Text>
+            ) : (
+              <Text
+                fontSize={"0.8rem"}
+                fontWeight={"medium"}
+                color={"black"}
+                mt={"2rem"}
+                alignSelf={"center"}
+              >
+                {""}
+              </Text>
+            )}
+          </Stack>
+          <Stack mt={"2rem"}>
+            <Button
+              bgColor={"#FAF9F6"}
+              variant={"outline"}
+              borderRadius={"lg"}
+              borderColor={"#ECECEC"}
+              my={"0.2rem"}
+              as={Link}
+              to={`http://localhost:8080/auth/login`}
+            >
+              <Stack direction={"row"} align={"center"} justify={"center"}>
+                <FcGoogle fontSize={"1.5rem"} />
+                <Text fontSize={"0.8rem"} fontWeight={500} color={"#000000"}>
+                  Login with Google
                 </Text>
               </Stack>
-            </Stack>
-            <Stack mt={"10%"}>
-              <Button
-                bgColor={"#FAF9F6"}
-                variant={"outline"}
-                borderRadius={"lg"}
-                borderColor={"#ECECEC"}
-                my={"0.2rem"}
-                as={Link}
-                to={`http://localhost:8080/auth/login`}
-              >
-                <Stack direction={"row"} align={"center"} justify={"center"}>
-                  <FcGoogle fontSize={"1.5rem"} />
-                  <Text fontSize={"0.8rem"} fontWeight={500} color={"#000000"}>
-                    Login with Google
-                  </Text>
-                </Stack>
-              </Button>
+            </Button>
+
+            {status ? (
               <Button
                 as={Link}
-                to="/beforeLoginList"
+                to={`/auth/beforeLoginList`}
                 bgColor={"black"}
                 borderRadius={"lg"}
                 my={"0.2rem"}
@@ -71,14 +137,27 @@ const Login = () => {
                 _hover={{ bgColor: "blackAlpha.800" }}
               >
                 <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
+                  Scan your items
+                </Text>
+              </Button>
+            ) : (
+              <Button
+                bgColor={"black"}
+                borderRadius={"lg"}
+                my={"0.2rem"}
+                cursor={"pointer"}
+                _hover={{ bgColor: "blackAlpha.800" }}
+                onClick={handleClick}
+              >
+                <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
                   Connect
                 </Text>
               </Button>
-            </Stack>
+            )}
           </Stack>
         </Stack>
       </Stack>
-    </>
+    </Stack>
   );
 };
 

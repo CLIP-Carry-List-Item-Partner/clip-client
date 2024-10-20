@@ -2,24 +2,22 @@ import { Stack, Text, Spacer, Box, Button, Input } from "@chakra-ui/react";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import Lists from "@/dummy.tsx";
 import { Link } from "react-router-dom";
-import ItemTemplate from "@/components/itemTemplate.tsx";
+import ItemTemplate1 from "@/components/itemTemplate1.tsx";
 import { useState, useEffect } from "react";
 
-const EditList = () => {
-  const [isZonk, setIsZonk] = useState(false); // Liat ada item apa nggak di List dummy data
+const editList = () => {
+  const [isEmpty, setIsEmpty] = useState(false); // Liat ada item apa nggak di List dummy data
+  let i = 1; // Index List dummy data
 
   // cek apakah ada item di List dummy data sesuai index
   useEffect(() => {
     const hasItems = Lists[i].items.length > 0;
     if (!hasItems) {
-      setIsZonk(true);
+      setIsEmpty(true);
     } else {
-      setIsZonk(false);
+      setIsEmpty(false);
     }
   });
-
-  let i = 1; // Index List dummy data
-
   return (
     <Stack
       minW={"320px"}
@@ -30,6 +28,7 @@ const EditList = () => {
       bgColor={"white"}
       p={"1.25rem"}
     >
+      {/* <-- Header Start --> */}
       <Stack
         color={"black"}
         direction={"row"}
@@ -59,17 +58,21 @@ const EditList = () => {
           </Text>
         </Stack>
       </Stack>
+      {/* <-- Header End --> */}
+      {/* <-- List name Start --> */}
       <Stack mt={"0.5rem"}>
         <Text fontSize={"0.9rem"} fontWeight={"600"} color={"#000000"}>
           List Name
         </Text>
         <Input defaultValue={Lists[i].listname} placeholder="List Name" />
       </Stack>
+      {/* <-- List name End --> */}
+      {/* <-- List Items Start --> */}
       <Stack mt={"0.5rem"}>
         <Text fontSize={"0.9rem"} fontWeight={"600"} color={"#000000"}>
           Items
         </Text>
-        {isZonk ? (
+        {isEmpty ? (
           <Stack
             bgColor={"#eeeeee"}
             borderRadius={"2xl"}
@@ -115,11 +118,13 @@ const EditList = () => {
             overflowY={"auto"}
           >
             {Lists[i].items.map((item, index) => (
-              <ItemTemplate key={index} {...item} />
+              <ItemTemplate1 key={index} {...item} />
             ))}
           </Stack>
         )}
       </Stack>
+      {/* <-- List Items End --> */}
+      {/* <-- Button Start --> */}
       <Stack
         mt={"auto"}
         mb={"15px"}
@@ -155,8 +160,9 @@ const EditList = () => {
           </Text>
         </Button>
       </Stack>
+      {/* <-- Button End --> */}
     </Stack>
   );
 };
 
-export default EditList;
+export default editList;
