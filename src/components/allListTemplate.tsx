@@ -26,7 +26,7 @@ const AllList = ({
         px={"1rem"}
         pt={"1rem"}
       >
-        <Text fontWeight={"medium"} color={"black"} fontSize={"1rem"}>
+        <Text fontWeight={"medium"} color={"black"} fontSize={"0.8rem"}>
           {listData.name || "List Name"}
         </Text>
         <Spacer />

@@ -1,13 +1,12 @@
 import { Stack, Text, Spacer, Button } from "@chakra-ui/react";
 
 const ItemTemplate2 = ({
-  name,
-  id,
-  onEdit,
+  itemData,
 }: {
-  name: string;
-  id: string;
-  onEdit: () => void; //on edit funsginya ada di item.tsx
+  itemData: {
+    id: string;
+    name: string;
+  };
 }) => {
   return (
     <Stack
@@ -28,11 +27,11 @@ const ItemTemplate2 = ({
           w={"fit-content"}
         >
           <Text fontSize={"0.7rem"} fontWeight={400} color={"white"}>
-            {id}
+            {itemData.id}
           </Text>
         </Stack>
         <Text w={"10rem"} fontSize={"1rem"} fontWeight={500} mt={"0.3rem"}>
-          {name}
+          {itemData.name}
         </Text>
       </Stack>
       <Spacer />
@@ -55,7 +54,7 @@ const ItemTemplate2 = ({
           mx={"0.2rem"}
           fontSize={"0.7rem"}
           fontWeight={500}
-          onClick={onEdit}
+          // onClick={onEdit}
         >
           Edit
         </Button>

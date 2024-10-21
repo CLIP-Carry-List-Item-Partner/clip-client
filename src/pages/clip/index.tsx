@@ -258,7 +258,7 @@ const Home = () => {
 
             <Button
               as={Link}
-              to="/currentList"
+              to={`/list/${currentList?.id}`}
               color={"#000000B2"}
               fontSize={"0.75rem"}
               textAlign={"center"}
@@ -285,7 +285,7 @@ const Home = () => {
             </Text>
             <Button
               as={Link}
-              to="/list"
+              to={`/clip/list`}
               variant={"link"}
               color={"#0B1215"}
               fontSize={"0.75rem"}

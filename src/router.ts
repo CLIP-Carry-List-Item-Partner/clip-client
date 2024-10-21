@@ -12,6 +12,7 @@ export type Path =
   | `/clip/currentList`
   | `/clip/item`
   | `/clip/item/:id`
+  | `/clip/item/backupIndex`
   | `/clip/list`
   | `/clip/list/:id`
 
