@@ -130,12 +130,12 @@ export class BLECLIP {
       }
       default: {
         const tagID = resDecode;
-        console.log(`tagID = ${resDecode}`);
+        // console.log(`tagID = ${resDecode}`);
         
-        // Update local storage
-        let existingItems = JSON.parse(localStorage.getItem("scannedItems") || "[]");
-        existingItems.push(tagID);
-        localStorage.setItem("scannedItems", JSON.stringify(existingItems));
+        // // Update local storage
+        // let existingItems = JSON.parse(localStorage.getItem("scannedItems") || "[]");
+        // existingItems.push(tagID);
+        // localStorage.setItem("scannedItems", JSON.stringify(existingItems));
 
         // Call the add item callback to update the scannedItems state in BeforeLoginList
         if (this.addItemCallback) {
