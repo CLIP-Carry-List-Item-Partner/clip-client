@@ -5,59 +5,24 @@ import useAuth from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "@/router";
-import { BLECLIP } from "@/utils/useBLE";
+import { useBluetooth } from "@/providers/BluetoothProvider";
 
 const Login = () => {
   const auth = useAuth();
   const nav = useNavigate();
-  const clipDevice = new BLECLIP();
-
-  const [imei, setImei] = useState("");
-  const [status, setStatus] = useState(false); // Track connection status
-  const [isClick, setIsClick] = useState(false);
-
-  const handleClick = () => {
-    setIsClick(true);
-    clipDevice.connectToBLE();
-  };
+  const { isConnected, connectToDevice, imei } = useBluetooth(); // Extract imei from the Bluetooth context
 
   useEffect(() => {
-    clipDevice.onIMEIChange((newImei) => {
-      setImei(newImei);
-      setStatus(true); // Update status when connected
-
-      localStorage.setItem("imei", newImei);
-      localStorage.setItem("status", "true");
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Clear IMEI from local storage on refresh
+    localStorage.removeItem("imei");
   }, []);
 
   useEffect(() => {
-    // localStorage.removeItem("imei");
-    // localStorage.removeItem("status");
-
-    const storedImei = localStorage.getItem("imei");
-    const storedStatus = localStorage.getItem("status");
-
-    if (storedImei && storedStatus) {
-      setImei(storedImei);
-      setStatus(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!clipDevice.status) {
-      localStorage.removeItem("imei");
-      localStorage.removeItem("status");
-    }
-  });
-
-  useEffect(() => {
+    // Redirect if authenticated
     if (auth.status === "authenticated") {
       return nav("/clip");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth]);
+  }, [auth, nav]);
 
   return (
     <Stack
@@ -86,7 +51,7 @@ const Login = () => {
             </Stack>
 
             {/* Menampilkan IMEI dari state */}
-            {status ? (
+            {isConnected && imei ? ( // Check both isConnected and imei
               <Text
                 fontSize={"0.8rem"}
                 fontWeight={"medium"}
@@ -104,7 +69,7 @@ const Login = () => {
                 mt={"2rem"}
                 alignSelf={"center"}
               >
-                {""}
+                Not connected to CLIP
               </Text>
             )}
           </Stack>
@@ -126,7 +91,7 @@ const Login = () => {
               </Stack>
             </Button>
 
-            {status ? (
+            {isConnected ? (
               <Button
                 as={Link}
                 to={`/auth/beforeLoginList`}
@@ -147,7 +112,7 @@ const Login = () => {
                 my={"0.2rem"}
                 cursor={"pointer"}
                 _hover={{ bgColor: "blackAlpha.800" }}
-                onClick={handleClick}
+                onClick={connectToDevice}
               >
                 <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
                   Connect

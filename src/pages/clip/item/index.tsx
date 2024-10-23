@@ -212,8 +212,8 @@ const Item = () => {
                         description: res.data.message,
                       });
                       setModalState(undefined);
-                      setScannedItems(null);
                       itemData.mutate();
+                      // setScannedItems(null);
                     })
                     .catch(errorHandler);
                 })}

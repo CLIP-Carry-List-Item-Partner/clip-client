@@ -9,6 +9,7 @@ import { useFetcher } from "@/hooks/useApi";
 const AppLayout = () => {
   const auth = useAuth();
   const fetcher = useFetcher();
+  const nav = useNavigate();
 
   if (auth.status === "loading") {
     return (

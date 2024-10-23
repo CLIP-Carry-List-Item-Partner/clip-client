@@ -1,63 +1,55 @@
-import { Stack, Text, Button } from "@chakra-ui/react";
+import { Stack, Text, Button, useToast } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import ItemTemplate1 from "@/components/itemTemplate1.tsx";
-import { BLECLIP } from "@/utils/useBLE"; // Adjust the import according to your project structure
+import ItemTemplate1 from "@/components/itemTemplate1";
+// import { BLECLIP } from "@/utils/useBLE";
+import { useBluetooth } from "@/providers/BluetoothProvider";
+
+type ScannedItems = {
+  id: string;
+  name: string;
+};
 
 const BeforeLoginList = () => {
-  const [isZonk, setIsZonk] = useState(false);
-  const [scannedItems, setScannedItems] = useState<string[]>([]);
+  const { bleClip, isConnected } = useBluetooth();
+  const [scannedItems, setScannedItems] = useState<ScannedItems[]>([]);
   const [deletedItems, setDeletedItems] = useState<string[]>([]);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (isConnected && bleClip) {
+      bleClip.setAddItemCallback((newTagID) => {
+        setScannedItems((prevItems) => {
+          const isExisting = prevItems.some((item) => item.id === newTagID);
+
+          if (!isExisting) {
+            const newItem = {
+              id: newTagID,
+              name: `Item ${prevItems.length + 1}`,
+            };
+            return [...prevItems, newItem];
+          } else {
+            console.log(`TagID ${newTagID} already exists.`);
+            toast({
+              title: "Tag already exists",
+              description: `TagID ${newTagID} already exists.`,
+              status: "warning",
+              duration: 3000,
+              isClosable: true,
+            });
+            return prevItems;
+          }
+        });
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, bleClip]);
 
   const handleDelete = (id: string) => {
-    const updatedItems = scannedItems.filter((item) => item !== id);
+    const updatedItems = scannedItems.filter((item) => item.id !== id);
     setScannedItems(updatedItems);
     setDeletedItems([...deletedItems, id]);
     localStorage.setItem("scannedItems", JSON.stringify(updatedItems));
-  };
-
-  // Create an instance of BLECLIP
-  const bleClip = new BLECLIP();
-
-  // Load items from localStorage
-  const loadItemsFromStorage = () => {
-    const items = JSON.parse(localStorage.getItem("scannedItems") || "[]");
-    setScannedItems(items);
-    setIsZonk(items.length === 0);
-  };
-
-  useEffect(() => {
-    loadItemsFromStorage();
-
-    // Set the add item callback
-    bleClip.setAddItemCallback(addItem);
-
-    // Load items every 1 seconds
-    const intervalId = setInterval(() => {
-      loadItemsFromStorage();
-    }, 2000);
-
-    const handleStorageChange = () => {
-      loadItemsFromStorage(); // Reload items from localStorage
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    // Clean up the interval and event listener on component unmount
-    return () => {
-      clearInterval(intervalId);
-      window.removeEventListener("storage", handleStorageChange);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Function to add a new item
-  const addItem = (newTagID: string) => {
-    if (!scannedItems.includes(newTagID)) {
-      const updatedItems = [...scannedItems, newTagID]; // Add new item to array
-      setScannedItems(updatedItems); // Update state
-      localStorage.setItem("scannedItems", JSON.stringify(updatedItems)); // Save to localStorage
-    }
   };
 
   return (
@@ -92,7 +84,7 @@ const BeforeLoginList = () => {
           h={"30rem"}
           overflowY={"auto"}
         >
-          {isZonk ? (
+          {scannedItems.length === 0 ? (
             <Stack
               bgColor={"white"}
               border={"1px"}
@@ -127,7 +119,7 @@ const BeforeLoginList = () => {
               <ItemTemplate1
                 key={index}
                 name={`Tag ${index + 1}`}
-                id={item}
+                id={item.id}
                 onDelete={handleDelete}
               />
             ))

@@ -5,7 +5,7 @@ export class BLECLIP {
   private imeiChangeCallback?: (newImei: string) => void;
   private addItemCallback?: (newTagID: string) => void; // Callback for adding items
   public status: boolean = false; // Status to track connection
-
+  private device?: BluetoothDevice; // Add device reference for disconnection
   private serviceUID: BluetoothServiceUUID =
     "65ed019f-49f7-4267-9b56-e90c2fd4b3e5";
   private characteristicUID: BluetoothCharacteristicUUID =
@@ -34,7 +34,7 @@ export class BLECLIP {
 
   public connectToBLE(): void {
     if (!navigator.bluetooth) {
-      console.log("Bluetooth is not Available!");
+      console.log("Bluetooth is not available!");
       return;
     }
 
@@ -44,6 +44,7 @@ export class BLECLIP {
         optionalServices: [this.serviceUID],
       })
       .then((device) => {
+        this.device = device; // Store device reference for later use
         return device.gatt?.connect();
       })
       .then((server) => {
@@ -77,6 +78,17 @@ export class BLECLIP {
         console.log(error);
         this.status = false; // Set status to false if connection fails
       });
+  }
+
+  // New disconnect method
+  public disconnect() {
+    if (this.device && this.device.gatt?.connected) {
+      console.log("Disconnecting from BLE device...");
+      this.device.gatt.disconnect();
+      this.status = false; // Update status to false after disconnection
+    } else {
+      console.log("No device connected to disconnect.");
+    }
   }
 
   public requestToBLE(msg: string): void {
@@ -130,13 +142,8 @@ export class BLECLIP {
       }
       default: {
         const tagID = resDecode;
-        // console.log(`tagID = ${resDecode}`);
+        console.log(`tagID = ${resDecode}`);
         
-        // // Update local storage
-        // let existingItems = JSON.parse(localStorage.getItem("scannedItems") || "[]");
-        // existingItems.push(tagID);
-        // localStorage.setItem("scannedItems", JSON.stringify(existingItems));
-
         // Call the add item callback to update the scannedItems state in BeforeLoginList
         if (this.addItemCallback) {
           this.addItemCallback(tagID);
