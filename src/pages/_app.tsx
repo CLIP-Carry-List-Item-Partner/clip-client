@@ -32,7 +32,7 @@ const AppLayout = () => {
       <SWRConfig
         value={{
           fetcher,
-          refreshInterval: 15 * 1000,
+          refreshInterval: 10 * 1000,
         }}
       >
         {/* Contents */}

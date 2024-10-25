@@ -24,12 +24,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "@/router";
 import useAuth from "@/hooks/useAuth";
 import useSWR from "swr";
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { GoPlus } from "react-icons/go";
 import useApi, { ResponseModel, useToastErrorHandler } from "@/hooks/useApi";
-import { BLECLIP } from "@/utils/useBLE";
+// import { BLECLIP } from "@/utils/useBLE";
+import { useBluetooth } from "@/providers/BluetoothProvider";
 
 type Item = {
   id: string;
@@ -50,28 +51,29 @@ type ItemDataFillable = z.infer<typeof itemSchema>;
 
 type ModalState = {
   state?: Item;
+  id?: string;
   mode: "create" | "edit" | "delete";
 };
 
 const Item = () => {
   const auth = useAuth();
   const nav = useNavigate();
+  const { bleClip, isConnected } = useBluetooth();
   const errorHandler = useToastErrorHandler();
   const toast = useToast();
   const api = useApi();
   const size = ["sm"];
   const [scannedItems, setScannedItems] = useState<string | null>(null);
 
-  const { data: itemData } = useSWR("/item");
+  const { data: itemData, mutate } = useSWR("/item");
 
   useEffect(() => {
-    const bleClip = new BLECLIP();
-    bleClip.setAddItemCallback((newTagID) => {
-      setScannedItems(newTagID);
-    });
-
-    bleClip.connectToBLE();
-  }, []);
+    if (isConnected && bleClip) {
+      bleClip.setAddItemCallback((newTagID) => {
+        setScannedItems(newTagID);
+      });
+    }
+  }, [isConnected, bleClip]);
 
   useEffect(() => {
     if (auth.status === "loading") {
@@ -97,11 +99,32 @@ const Item = () => {
     reset,
     control,
     formState: { errors },
+    setValue,
   } = useForm<ItemDataFillable>({
     resolver: zodResolver(itemSchema),
+    defaultValues: {
+      id: scannedItems!,
+      name: "",
+    },
   });
 
+  useEffect(() => {
+    if (scannedItems) {
+      setValue("id", scannedItems);
+    }
+  }, [scannedItems, setValue]);
+
   const [modalState, setModalState] = useState<ModalState | undefined>();
+
+  useEffect(() => {
+    if (modalState && modalState.mode === "edit") {
+      reset({
+        id: modalState.state?.id,
+        name: modalState.state?.name,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modalState]);
 
   useEffect(() => {
     reset();
@@ -118,7 +141,6 @@ const Item = () => {
         lineHeight={"1.2rem"}
         bgColor={"white"}
         p={"1.25rem 1.25rem 8rem 1.25rem"}
-        // style={{ filter: isOpen ? "blur(3px)" : "none" }} // Blur the background when modal is open
       >
         {/* Header start */}
         <Stack
@@ -151,7 +173,10 @@ const Item = () => {
           {/* end */}
         </Stack>
 
-        {itemData && itemData.data ? (
+        {itemData &&
+        Array.isArray(itemData.data) &&
+        itemData.data.length > 0 ? (
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           itemData.data.map((item: any) => (
             // nanti yang di [id] dibenerin
             // <Link to={`/clip/list/${list.id}`}>
@@ -161,12 +186,33 @@ const Item = () => {
                 id: item.id,
                 name: item.name,
               }}
+              onClick={() => {
+                const data = itemData.data.find((i: Item) => i.id === item.id);
+                if (data) {
+                  setModalState({ mode: "delete", id: data.id });
+                }
+              }}
+              onClickEdit={() => {
+                const data = itemData.data.find((i: Item) => i.id === item.id);
+                if (data) {
+                  setModalState({ mode: "edit", id: data.id, state: data });
+                }
+              }}
             />
             // </Link>
           ))
         ) : (
-          <Stack>
-            <Text>Your list will be shown here</Text>
+          <Stack
+            w={"full"}
+            border={"1px"}
+            h={"full"}
+            p={"1rem"}
+            borderRadius={"lg"}
+            borderStyle={"dashed"}
+            alignItems={"center"}
+            fontWeight={"semibold"}
+          >
+            <Text>Add your item to create a list</Text>
           </Stack>
         )}
       </Stack>
@@ -178,8 +224,8 @@ const Item = () => {
         onClose={() => setModalState(undefined)}
         size={size}
       >
-        <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(2px)" />
-        <ModalContent borderRadius={"20px"}>
+        <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" />
+        <ModalContent borderRadius={"15px"}>
           <ModalHeader
             fontWeight={"bold"}
             fontFamily={"PlusJakartaSans"}
@@ -189,14 +235,81 @@ const Item = () => {
             {modalState?.mode === "edit" && "Edit Item"}
             {modalState?.mode === "delete" && "Delete Item"}
             <Stack mt={"0.5rem"}>
-              <Text fontWeight={"normal"} fontSize={"0.8rem"}>
-                Scan your item with the CLIP module and item ID will be shown.
-              </Text>
+              {modalState?.mode === "create" && (
+                <Text fontWeight={"normal"} fontSize={"0.8rem"}>
+                  Scan your item with the CLIP module and item ID will be shown.
+                </Text>
+              )}
+              {modalState?.mode === "delete" && (
+                <Text fontWeight={"normal"} fontSize={"0.8rem"}>
+                  Are you sure you want to delete this item?
+                </Text>
+              )}
             </Stack>
           </ModalHeader>
           <ModalCloseButton />
 
           <ModalBody>
+            {modalState?.mode === "edit" && (
+              <form
+                id="edit-data"
+                onSubmit={handleSubmit((data) => {
+                  if (modalState.id) {
+                    api
+                      .put<ResponseModel>(`/item/update/${modalState.id}`, data)
+                      .then((res) => {
+                        toast({
+                          title: "Item updated successfully",
+                          status: "success",
+                          duration: 3000,
+                          isClosable: true,
+                          description: res.data.message,
+                        });
+                      })
+                      .catch(errorHandler)
+                      .finally(() => {
+                        setModalState(undefined);
+                        mutate();
+                      });
+                  }
+                })}
+              >
+                <Stack spacing={"1rem"}>
+                  <FormControl isInvalid={!!errors.id}>
+                    <Input
+                      textAlign={"center"}
+                      placeholder="Your item ID will be shown here"
+                      bgColor={"black"}
+                      color={"white"}
+                      {...register("id")}
+                      readOnly
+                    />
+                    <FormErrorMessage>
+                      {errors.id && errors.id.message}
+                    </FormErrorMessage>
+                  </FormControl>
+
+                  <FormControl isInvalid={!!errors.name}>
+                    <FormLabel
+                      fontFamily={"PlusJakartaSans"}
+                      fontWeight={"semibold"}
+                      fontSize={"0.8rem"}
+                    >
+                      Item Name
+                    </FormLabel>
+                    <Input
+                      placeholder="Input your item name"
+                      {...register("name")}
+                      type="text"
+                    />
+                    <FormErrorMessage>
+                      {errors.name && errors.name.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                </Stack>
+              </form>
+            )}
+
             {modalState?.mode === "create" && (
               <form
                 id="add-data"
@@ -211,23 +324,33 @@ const Item = () => {
                         isClosable: true,
                         description: res.data.message,
                       });
-                      setModalState(undefined);
-                      itemData.mutate();
-                      // setScannedItems(null);
                     })
-                    .catch(errorHandler);
+                    .catch(errorHandler)
+                    .finally(() => {
+                      setModalState(undefined);
+                      mutate();
+                      setScannedItems(null);
+                    });
                 })}
               >
                 <Stack spacing={"1rem"}>
                   <FormControl isInvalid={!!errors.id}>
+                    {!isConnected && (
+                      <Stack
+                        alignItems={"center"}
+                        color={"red.800"}
+                        mb={"0.6rem"}
+                      >
+                        <Text>Please connect to CLIP to scan your item</Text>
+                      </Stack>
+                    )}
                     <Input
                       textAlign={"center"}
                       placeholder="Your item ID will be shown here"
                       bgColor={"black"}
                       color={"white"}
                       {...register("id")}
-                      value={scannedItems || ""}
-                      // value={rfidScanData} // Assuming 'rfidScanData' is the state storing the scanned RFID value
+                      // value={scannedItems!}
                       readOnly
                     />
 
@@ -261,6 +384,21 @@ const Item = () => {
           </ModalBody>
 
           <ModalFooter>
+            {modalState?.mode === "edit" && (
+              <Button
+                type="submit"
+                form="edit-data"
+                bgColor={"black"}
+                color={"#F0E13D"}
+                fontFamily={"PlusJakartaSans"}
+                fontWeight={"normal"}
+                fontSize={"0.8rem"}
+                borderRadius={"10px"}
+              >
+                Save
+              </Button>
+            )}
+
             {modalState?.mode === "create" && (
               <Button
                 type="submit"
@@ -273,6 +411,39 @@ const Item = () => {
                 borderRadius={"10px"}
               >
                 Create
+              </Button>
+            )}
+
+            {modalState?.mode === "delete" && (
+              <Button
+                bgColor={"black"}
+                color={"#F0E13D"}
+                fontFamily={"PlusJakartaSans"}
+                fontWeight={"normal"}
+                fontSize={"0.8rem"}
+                borderRadius={"10px"}
+                onClick={() => {
+                  if (modalState.id) {
+                    api
+                      .delete<ResponseModel>(`/item/delete/${modalState.id}`)
+                      .then((res) => {
+                        toast({
+                          title: "Item deleted successfully",
+                          status: "success",
+                          duration: 3000,
+                          isClosable: true,
+                          description: res.data.message,
+                        });
+                      })
+                      .catch(errorHandler)
+                      .finally(() => {
+                        setModalState(undefined);
+                        mutate();
+                      });
+                  }
+                }}
+              >
+                Delete
               </Button>
             )}
           </ModalFooter>

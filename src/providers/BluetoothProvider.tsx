@@ -5,6 +5,7 @@ interface BluetoothContextProps {
   bleClip: BLECLIP | null;
   isConnected: boolean;
   connectToDevice: () => void;
+  imei: string | null; // Add IMEI state
 }
 
 const BluetoothContext = createContext<BluetoothContextProps | undefined>(

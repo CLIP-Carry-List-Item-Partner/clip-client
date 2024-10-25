@@ -6,14 +6,14 @@ import profile from "@/assets/profile.svg";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "@/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const location = useLocation();
-  // const currentPatch = location.pathname;
   const auth = useAuth();
   const nav = useNavigate();
   const toast = useToast();
+  const [activeLink, setActiveLink] = useState(location.pathname);
 
   useEffect(() => {
     if (auth.status === "unauthenticated") {
@@ -26,32 +26,50 @@ const Navbar = () => {
       nav("/auth/login");
       return;
     }
+  }, [auth, nav, toast]);
 
-    if (auth.status === "authenticated") {
-      toast({
-        title: "Welcome back!",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      nav("/clip");
-      return;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth]);
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location]);
+
+  const links = [
+    {
+      route: "/clip",
+      label: "Home",
+      icon: home,
+    },
+    {
+      route: "/clip/list",
+      label: "List",
+      icon: list,
+    },
+    {
+      route: "/clip/item",
+      label: "Item",
+      icon: item,
+    },
+    {
+      route: "/clip/profile",
+      label: "Profile",
+      icon: profile,
+    },
+  ];
+
+  // Check if the current route matches /clip/list/:id
+  const isDetailPage = /^\/clip\/list\/\d+$/.test(location.pathname);
 
   return (
-    <>
-      <Stack
-        align={"center"}
-        justify={"center"}
-        fontFamily={"PlusJakartaSans"}
-        bgColor={"black"}
-      >
-        {/* Contents */}
-        <Outlet />
+    <Stack
+      align={"center"}
+      justify={"center"}
+      fontFamily={"PlusJakartaSans"}
+      bgColor={"black"}
+    >
+      {/* Contents */}
+      <Outlet />
 
-        {/* Navbar */}
+      {/* Render Navbar only if not on /clip/list/:id */}
+      {!isDetailPage && (
         <Stack
           minW={"320px"}
           w={"full"}
@@ -75,34 +93,27 @@ const Navbar = () => {
             pb={"0.5rem"}
             borderRadius={"2xl"}
           >
-            <Link to="/clip">
-              <Stack gap={0}>
-                <Image src={home} alt="home" boxSize={"1.5rem"} />
-                <Text fontSize={"0.5rem"}>Home</Text>
-              </Stack>
-            </Link>
-            <Link to="/clip/list">
-              <Stack gap={0}>
-                <Image src={list} alt="list" boxSize={"1.5rem"} />
-                <Text fontSize={"0.5rem"}>List</Text>
-              </Stack>
-            </Link>
-            <Link to="/clip/item">
-              <Stack gap={0}>
-                <Image src={item} alt="item" boxSize={"1.5rem"} />
-                <Text fontSize={"0.5rem"}>Item</Text>
-              </Stack>
-            </Link>
-            <Link to="/clip/profile">
-              <Stack gap={0}>
-                <Image src={profile} alt="profile" boxSize={"1.5rem"} />
-                <Text fontSize={"0.5rem"}>Profile</Text>
-              </Stack>
-            </Link>
+            {links.map((link, index) => (
+              <Link
+                to={link.route}
+                key={index}
+                onClick={() => setActiveLink(link.route)}
+              >
+                {/* Set opacity based on active link */}
+                <Stack gap={0} opacity={activeLink === link.route ? 1 : 0.5}>
+                  <Image
+                    src={link.icon}
+                    alt={link.label.toLowerCase()}
+                    boxSize={"1.5rem"}
+                  />
+                  <Text fontSize={"0.5rem"}>{link.label}</Text>
+                </Stack>
+              </Link>
+            ))}
           </Stack>
         </Stack>
-      </Stack>
-    </>
+      )}
+    </Stack>
   );
 };
 

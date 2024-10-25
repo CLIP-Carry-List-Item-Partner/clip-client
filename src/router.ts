@@ -15,6 +15,7 @@ export type Path =
   | `/clip/item/backupIndex`
   | `/clip/list`
   | `/clip/list/:id`
+  | `/clip/list/idbackup`
 
 export type Params = {
   '/clip/item/:id': { id: string }

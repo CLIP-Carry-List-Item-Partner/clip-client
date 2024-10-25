@@ -2,16 +2,22 @@ import { Stack, Text, Spacer, Button } from "@chakra-ui/react";
 
 const ItemTemplate2 = ({
   itemData,
+  onClick,
+  onClickEdit,
 }: {
   itemData: {
     id: string;
     name: string;
   };
+  onClick: () => void;
+  onClickEdit: () => void;
 }) => {
   return (
     <Stack
       border={"1px"}
       borderRadius={"xl"}
+      borderColor={"#DDDDDD"}
+      shadow={"base"}
       my={"0.125rem"}
       p={"1.2rem"}
       direction={"row"}
@@ -44,6 +50,7 @@ const ItemTemplate2 = ({
           mx={"0.2rem"}
           fontSize={"0.7rem"}
           fontWeight={500}
+          onClick={onClick}
         >
           Delete
         </Button>
@@ -54,7 +61,7 @@ const ItemTemplate2 = ({
           mx={"0.2rem"}
           fontSize={"0.7rem"}
           fontWeight={500}
-          // onClick={onEdit}
+          onClick={onClickEdit}
         >
           Edit
         </Button>

@@ -17,6 +17,10 @@ const Root = () => {
     //   return navigate("/clip");
     // }
 
+    if (auth.status === "authenticated") {
+      return navigate("/clip");
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth]);
 

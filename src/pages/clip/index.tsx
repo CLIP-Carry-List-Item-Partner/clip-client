@@ -13,7 +13,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import pb from "@/assets/Powerbank.svg";
-import CurrTemplate from "@/components/currListTemplate.tsx";
 import AllList from "@/components/allListTemplate";
 import { useState, useEffect } from "react";
 import Lists from "@/dummy.tsx";
@@ -24,39 +23,45 @@ import useSWR from "swr";
 import { HiOutlineLogout } from "react-icons/hi";
 import useApi, { ResponseModel, useToastErrorHandler } from "@/hooks/useApi";
 import { z } from "zod";
+import { useBluetooth } from "@/providers/BluetoothProvider";
+import { FaCircleCheck } from "react-icons/fa6";
+import HomeList from "@/components/homeListTemplate";
+
+type List = {
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type Item = {
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 const Home = () => {
   const auth = useAuth();
   const nav = useNavigate();
+  const { isConnected, connectToDevice } = useBluetooth();
   const errorHandler = useToastErrorHandler();
   const toast = useToast();
   const api = useApi();
 
-  type List = {
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-  };
-
-  type Item = {
-    id: string;
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-  };
-
   const listData = useSWR("/list");
+
+  console.log(listData.data);
 
   const currentList = listData.data?.data?.sort(
     (a: List, b: List) =>
       new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
   )[0];
 
-  console.log(currentList);
+  // console.log(currentList);
 
-  const allList = listData.data?.data;
+  // const allList = listData.data?.data;
 
-  const itemData = useSWR<Item[]>("/item");
+  // const itemData = useSWR<Item[]>("/item");
 
   useEffect(() => {
     if (auth.status === "unauthenticated") {
@@ -83,12 +88,12 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth]);
 
-  const [isActive, setIsActive] = useState(false);
-  const handleStatusClick = () => {
-    setIsActive(!isActive);
-  };
+  // const [isActive, setIsActive] = useState(false);
+  // const handleStatusClick = () => {
+  //   setIsActive(!isActive);
+  // };
 
-  let i = 0;
+  // let i = 0;
 
   return (
     <>
@@ -147,7 +152,7 @@ const Home = () => {
         <Stack
           h={"6rem"}
           bgColor={"#9d9d9d"}
-          borderRadius={"lg"}
+          borderRadius={"xl"}
           direction={"row"}
           align={"center"}
           mt={"0.8rem"}
@@ -155,29 +160,30 @@ const Home = () => {
             "linear(to-r, blackAlpha.700, blackAlpha.800, blackAlpha.900)"
           }
         >
-          <Stack ml={"1.2rem"}>
+          <Stack ml={"1.2rem"} spacing={"0.8rem"}>
             <Text
               color={"white"}
-              fontSize={"1.25rem"}
-              fontWeight={600}
-              mb={"0.2rem"}
+              fontSize={"1.1rem"}
+              fontWeight={"semibold"}
+
+              // mb={"0.2rem"}
             >
               Device Status
             </Text>
-            {isActive ? (
-              <Stack direction={"row"} justify={"center"} align={"center"}>
-                <Button
-                  h={"2rem"}
-                  w={"full"}
-                  onClick={handleStatusClick}
-                  cursor={"pointer"}
-                  bgColor={"#f0e13d"}
-                  _hover={{ bgColor: "#a29609" }}
-                  fontWeight={600}
-                  fontSize={"0.7rem"}
-                >
-                  Active
-                </Button>
+            {isConnected ? (
+              <Stack
+                h={"2rem"}
+                w={"full"}
+                bgColor={"#f0e13d"}
+                fontWeight={"medium"}
+                alignItems={"center"}
+                justifyItems={"center"}
+                justifyContent={"center"}
+                borderRadius={"md"}
+                direction={"row"}
+              >
+                <FaCircleCheck color={"#000000"} width={"2px"} />
+                <Text>Active</Text>
               </Stack>
             ) : (
               <Stack
@@ -199,12 +205,12 @@ const Home = () => {
                 </Text>
                 <Button
                   bgColor={"#f0e13d"}
-                  onClick={handleStatusClick}
+                  onClick={connectToDevice}
                   cursor={"pointer"}
                   size={"sm"}
                   h={"2rem"}
                   borderRadius={"lg"}
-                  _hover={{ bgColor: "#a29609" }}
+                  // _hover={{ bgColor: "#a29609" }}
                 >
                   <Text color={"black"} fontWeight={500} fontSize={"0.75rem"}>
                     Pair
@@ -219,14 +225,14 @@ const Home = () => {
         {/* <-- Device Status End --> */}
 
         {/* <-- Current List Start --> */}
-        <Stack color={"black"} mt={"0.75rem"}>
+        <Stack color={"black"} mt={"2rem"}>
           <Stack
             direction={"row"}
             align={"center"}
             justify={"space-between"}
-            mb={"0.5rem"}
+            mb={"0.8rem"}
           >
-            <Text fontSize={"1.2rem"} fontWeight={700}>
+            <Text fontSize={"1rem"} fontWeight={700}>
               Current List
             </Text>
             <Stack
@@ -242,19 +248,36 @@ const Home = () => {
             </Stack>
           </Stack>
           <Stack bgColor={"#eeeeee"} borderRadius={"2xl"} p={"1rem"}>
-            {/* Kondisi loading saat data sedang di-fetch */}
-            {!itemData.data && !itemData.error && <Text>Loading items...</Text>}
-
-            {/* {!currentList?.items} */}
-
-            {/* Kondisi error jika fetching data gagal */}
-            {itemData.error && <Text color="red">Failed to load items</Text>}
-
-            {/* Pastikan data tersedia dan valid sebelum menggunakan map */}
-            {/* {Array.isArray(itemData.data) &&
-              itemData.data
-                .slice(0, 3)
-                .map((item, index) => <CurrTemplate key={index} {...item} />)} */}
+            {listData &&
+            Array.isArray(listData.data) &&
+            listData.data.length > 0 ? (
+              // Sort by 'createdAt' and get the latest 3 items
+              listData.data
+                .sort(
+                  (a: any, b: any) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )
+                .slice(0, 3) // Get the latest 3 items
+                .map((item: any) => {
+                  console.log("Rendering item:", item); // Debugging log
+                  return (
+                    <HomeList
+                      key={item.id} // Use item.id for the key
+                      listData={{
+                        items: [
+                          {
+                            itemName: item.name, // Accessing the name correctly
+                            itemId: item.id, // Accessing the id correctly
+                          },
+                        ],
+                      }}
+                    />
+                  );
+                })
+            ) : (
+              <Text>No items in this list</Text>
+            )}
 
             <Button
               as={Link}
@@ -273,14 +296,14 @@ const Home = () => {
         {/* <-- Current List End --> */}
 
         {/* <-- Saved List start --> */}
-        <Stack color={"black"} mt={"0.75rem"}>
+        <Stack color={"black"} mt={"2rem"}>
           <Stack
             direction={"row"}
             alignItems={"center"}
             justifyContent={"space-between"}
             mb={"0.5rem"}
           >
-            <Text fontWeight={700} fontSize={"1.2rem"}>
+            <Text fontWeight={700} fontSize={"1rem"}>
               Your List
             </Text>
             <Button
@@ -295,15 +318,42 @@ const Home = () => {
               View All
             </Button>
           </Stack>
-          {listData && (
-            <AllList
-              listData={{
-                name: listData.data?.name,
-                // createdAt: listData.data?.createdAt,
-                updatedAt: listData.data?.updatedAt,
-                items: listData.data?.items,
-              }}
-            />
+          {listData && listData.data ? (
+            listData.data.data
+              .sort(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (a: any, b: any) =>
+                  new Date(b.updatedAt).getTime() -
+                  new Date(a.updatedAt).getTime()
+              )
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .map((list: any) => (
+                // nanti yang di [id] dibenerin
+                <Link to={`/clip/list/${list.id}`}>
+                  <AllList
+                    key={list.id} // Ensure unique key for each list
+                    listData={{
+                      items: list.items,
+                      name: list.name,
+                      updatedAt: new Date(list.updatedAt).toLocaleString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        }
+                      ),
+                    }}
+                  />
+                </Link>
+              ))
+          ) : (
+            <Stack>
+              <Text>Your list will be shown here</Text>
+            </Stack>
           )}
         </Stack>
         {/* <-- Saved List end -->     */}

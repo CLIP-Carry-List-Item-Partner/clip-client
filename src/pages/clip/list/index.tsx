@@ -32,11 +32,16 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GoPlus } from "react-icons/go";
 import { useForm, Controller } from "react-hook-form";
+import { useBluetooth } from "@/providers/BluetoothProvider";
+import { Items } from "../../../dummy";
+import item from "@/assets/item.svg";
+import list from "@/assets/list.svg";
 
 type List = {
   name: string;
   createdAt: Date;
   updatedAt: Date;
+  items: Item[];
 };
 
 type Item = {
@@ -46,29 +51,43 @@ type Item = {
   updatedAt: Date;
 };
 
-const listSchema = z.object({
-  name: z
-    .string({ required_error: "List name is required" })
-    .min(3, { message: "Minimum 3 Words" })
-    .max(255),
-});
+const listSchema = z
+  .object({
+    name: z
+      .string({ required_error: "List name is required" })
+      .min(3, { message: "Minimum 3 Words" })
+      .max(255),
+  })
+  .extend({
+    items: z
+      .array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+        })
+      )
+      .optional(),
+  });
 
 type LisDataFillable = z.infer<typeof listSchema>;
 
 type ModalState = {
   state?: List;
-  mode: "create";
+  mode: "create" | "edit";
 };
 
 const List = () => {
   const auth = useAuth();
   const nav = useNavigate();
+  // const { bleClip, isConnected } = useBluetooth();
   const errorHandler = useToastErrorHandler();
   const toast = useToast();
   const api = useApi();
   const size = ["sm"];
 
-  const { data: listData } = useSWR("/list");
+  const { data: listData, mutate } = useSWR("/list");
+
+  // const { data: itemData } = useSWR<Item[]>("/item");
 
   useEffect(() => {
     if (auth.status === "loading") {
@@ -144,29 +163,37 @@ const List = () => {
             </Button>
           </Stack>
           {listData && listData.data ? (
-            listData.data.map((list: any) => (
-              // nanti yang di [id] dibenerin
-              <Link to={`/clip/list/${list.id}`}>
-                <AllList
-                  key={list.id} // Ensure unique key for each list
-                  listData={{
-                    name: list.name,
-                    updatedAt: new Date(list.updatedAt).toLocaleString(
-                      "en-US",
-                      {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                      }
-                    ),
-                    items: list.items,
-                  }}
-                />
-              </Link>
-            ))
+            listData.data
+              .sort(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (a: any, b: any) =>
+                  new Date(b.updatedAt).getTime() -
+                  new Date(a.updatedAt).getTime()
+              )
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              .map((list: any) => (
+                // nanti yang di [id] dibenerin
+                <Link to={`/clip/list/${list.id}`}>
+                  <AllList
+                    key={list.id} // Ensure unique key for each list
+                    listData={{
+                      items: list.items,
+                      name: list.name,
+                      updatedAt: new Date(list.updatedAt).toLocaleString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        }
+                      ),
+                    }}
+                  />
+                </Link>
+              ))
           ) : (
             <Stack>
               <Text>Your list will be shown here</Text>
@@ -183,10 +210,10 @@ const List = () => {
         onClose={() => setModalState(undefined)}
         size={size}
       >
-        <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(2px)" />
-        <ModalContent borderRadius={"20px"}>
+        <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" />
+        <ModalContent borderRadius={"15px"}>
           <ModalHeader
-            fontWeight={"semibold"}
+            fontWeight={"bold"}
             fontFamily={"PlusJakartaSans"}
             fontSize={"1rem"}
           >
@@ -209,10 +236,13 @@ const List = () => {
                         isClosable: true,
                         description: res.data.message,
                       });
-                      setModalState(undefined);
-                      listData.mutate();
                     })
-                    .catch(errorHandler);
+                    .catch(errorHandler)
+                    .finally(() => {
+                      setModalState(undefined);
+                      mutate();
+                      // listData.mutate();
+                    });
                 })}
               >
                 <Stack>
@@ -220,6 +250,7 @@ const List = () => {
                     <FormLabel
                       fontFamily={"PlusJakartaSans"}
                       fontWeight={"normal"}
+                      fontSize={"0.8rem"}
                     >
                       List Name
                     </FormLabel>
@@ -248,6 +279,8 @@ const List = () => {
                 color={"#F0E13D"}
                 fontFamily={"PlusJakartaSans"}
                 fontWeight={"normal"}
+                fontSize={"0.8rem"}
+                borderRadius={"10px"}
               >
                 Create
               </Button>

@@ -1,23 +1,42 @@
-import { Stack, Text, Spacer, Box, Button, Input } from "@chakra-ui/react";
+import { Stack, Text, Spacer, Box, Button, useToast } from "@chakra-ui/react";
 import { FaChevronCircleLeft } from "react-icons/fa";
-import Lists from "@/dummy.tsx";
-import { Link } from "react-router-dom";
-import ItemTemplate1 from "@/components/itemTemplate1.tsx";
+import CurrTemplate from "@/components/currListTemplate.tsx";
+import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import useAuth from "@/hooks/useAuth";
+import { useNavigate } from "@/router";
+import useSWR from "swr";
 
-const editList = () => {
-  const [isEmpty, setIsEmpty] = useState(false); // Liat ada item apa nggak di List dummy data
-  let i = 1; // Index List dummy data
+const DetailList = () => {
+  const { id } = useParams(); // Get list ID from URL
+  const auth = useAuth();
+  const nav = useNavigate();
+  const toast = useToast();
 
-  // cek apakah ada item di List dummy data sesuai index
+  // Fetch the specific list using the ID from the URL
+  const { data: listData } = useSWR(`/list/${id}`);
+
   useEffect(() => {
-    const hasItems = Lists[i].items.length > 0;
-    if (!hasItems) {
-      setIsEmpty(true);
-    } else {
-      setIsEmpty(false);
+    if (auth.status === "loading") {
+      return;
     }
-  });
+
+    if (auth.status === "unauthenticated") {
+      toast({
+        title: "Please login to continue",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      nav("/auth/login");
+      return;
+    }
+  }, [auth, nav, toast]);
+
+  if (!listData) {
+    return <Text>Loading...</Text>;
+  }
+
   return (
     <Stack
       minW={"320px"}
@@ -36,133 +55,64 @@ const editList = () => {
         align={"center"}
         mb={"0.8rem"}
       >
-        <Box as={Link} to="/currentList">
+        <Box as={Link} to="/clip/list">
           <FaChevronCircleLeft fontSize={"1.5rem"} />
         </Box>
         <Text fontSize={"1.2rem"} fontWeight={"700"} ml={"0.5rem"}>
-          Edit List
+          {listData && listData.data ? (
+            listData.data.name
+          ) : (
+            <Text>Loading...</Text>
+          )}
         </Text>
         <Spacer />
-        <Stack>
-          <Text
-            bgColor={"white"}
-            border={"1px"}
-            borderRadius={"xl"}
-            px={"0.7rem"}
-            py={"0.2rem"}
-            fontWeight={"500"}
-            color={"#777777"}
-            fontSize={"0.75rem"}
-          >
-            Updated, {Lists[i].lastUpdated}
-          </Text>
-        </Stack>
-      </Stack>
-      {/* <-- Header End --> */}
-      {/* <-- List name Start --> */}
-      <Stack mt={"0.5rem"}>
-        <Text fontSize={"0.9rem"} fontWeight={"600"} color={"#000000"}>
-          List Name
-        </Text>
-        <Input defaultValue={Lists[i].listname} placeholder="List Name" />
-      </Stack>
-      {/* <-- List name End --> */}
-      {/* <-- List Items Start --> */}
-      <Stack mt={"0.5rem"}>
-        <Text fontSize={"0.9rem"} fontWeight={"600"} color={"#000000"}>
-          Items
-        </Text>
-        {isEmpty ? (
-          <Stack
-            bgColor={"#eeeeee"}
-            borderRadius={"2xl"}
-            p={"1rem"}
-            h={"34rem"}
-          >
-            <Stack
-              bgColor={"white"}
-              border={"1px"}
-              borderRadius={"xl"}
-              borderStyle={"dashed"}
-              my={"0.125rem"}
-              p={"0.75rem"}
-            >
-              <Stack
-                bgColor={"black"}
-                color={"white"}
-                px={"0.5rem"}
-                py={"0.2rem"}
-                borderRadius={"md"}
-                w={"fit-content"}
-              >
-                <Text
-                  fontSize={"0.5rem"}
-                  fontWeight={400}
-                  letterSpacing={"0.05rem"}
-                  color={"#F0E13D"}
-                >
-                  #XXXXXXXXX
-                </Text>
-              </Stack>
-              <Text fontSize={"0.9rem"} fontWeight={500}>
-                Your item will be listed here
-              </Text>
-            </Stack>
-          </Stack>
-        ) : (
-          <Stack
-            bgColor={"#eeeeee"}
-            borderRadius={"2xl"}
-            p={"1rem"}
-            h={"34rem"}
-            overflowY={"auto"}
-          >
-            {Lists[i].items.map((item, index) => (
-              <ItemTemplate1 key={index} {...item} />
-            ))}
-          </Stack>
-        )}
-      </Stack>
-      {/* <-- List Items End --> */}
-      {/* <-- Button Start --> */}
-      <Stack
-        mt={"auto"}
-        mb={"15px"}
-        direction={"row"}
-        justify={"center"}
-        w={"full"}
-      >
         <Button
           as={Link}
-          to="/currentList"
+          to="/editList"
           bgColor={"white"}
-          borderRadius={"lg"}
           border={"1px"}
-          py={"0.2rem"}
-          px={"4rem"}
-          cursor={"pointer"}
-          _hover={{ bgColor: "whiteAlpha.900" }}
+          borderRadius={"xl"}
+          px={"1rem"}
+          h={"1.7rem"}
         >
-          <Text fontSize={"0.8rem"} fontWeight={600} color={"#000000"}>
-            Cancel
-          </Text>
-        </Button>
-        <Button
-          bgColor={"black"}
-          borderRadius={"lg"}
-          py={"0.2rem"}
-          px={"4rem"}
-          cursor={"pointer"}
-          _hover={{ bgColor: "blackAlpha.800" }}
-        >
-          <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
-            Save
+          <Text fontWeight={"500"} color={"#777777"} fontSize={"0.75rem"}>
+            Edit
           </Text>
         </Button>
       </Stack>
-      {/* <-- Button End --> */}
+      {/* <-- Header End --> */}
+
+      {/* <-- Current List Start --> */}
+      <Stack
+        bgColor={"#eeeeee"}
+        borderRadius={"2xl"}
+        p={"1rem"}
+        h={"45rem"}
+        overflowY={"auto"}
+      >
+        {listData &&
+        Array.isArray(listData.data.items) &&
+        listData.data.items.length > 0 ? (
+          // Map each item in the items array
+          listData.data.items.map((item: any) => (
+            <CurrTemplate
+              key={item.item.id} // Use item.item.id for the key
+              listData={{
+                items: [
+                  {
+                    itemName: item.item.name, // Accessing the name correctly
+                    itemId: item.item.id, // Accessing the id correctly
+                  },
+                ],
+              }}
+            />
+          ))
+        ) : (
+          <Text>No items in this list</Text>
+        )}
+      </Stack>
     </Stack>
   );
 };
 
-export default editList;
+export default DetailList;
