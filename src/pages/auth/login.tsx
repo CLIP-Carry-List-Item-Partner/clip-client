@@ -3,22 +3,20 @@ import onBoard from "@/assets/onboarding.svg";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "@/router";
 import { useBluetooth } from "@/providers/BluetoothProvider";
 
 const Login = () => {
   const auth = useAuth();
   const nav = useNavigate();
-  const { isConnected, connectToDevice, imei } = useBluetooth(); // Extract imei from the Bluetooth context
+  const { isConnected, connectToDevice, imei } = useBluetooth();
 
   useEffect(() => {
-    // Clear IMEI from local storage on refresh
     localStorage.removeItem("imei");
   }, []);
 
   useEffect(() => {
-    // Redirect if authenticated
     if (auth.status === "authenticated") {
       return nav("/clip");
     }
@@ -32,11 +30,23 @@ const Login = () => {
       fontFamily={"PlusJakartaSans"}
       bgColor={"black"}
     >
-      <Stack minW={"320px"} maxW={"425px"} minH={"100vh"} bgColor={"#FAF9F6"}>
-        <Stack align={"center"}>
-          <Image src={onBoard} alt="onBoard"></Image>
-        </Stack>
-        <Stack p={"1.25rem"}>
+      <Stack
+        minW={"320px"}
+        maxW={"425px"}
+        minH={"100vh"}
+        bgColor={"#FAF9F6"}
+        justify={"space-between"} // Distribute space between child elements
+        px={"1.25rem"}
+      >
+        <Stack align={"center"} w={"full"} bgColor={"#fcfbf4"}>
+          <Image
+            src={onBoard}
+            alt="onBoard"
+            w={"75%"}
+            maxW={"full"}
+            objectFit={"contain"}
+          />
+
           <Stack textAlign={"center"} mt={"1rem"}>
             <Text fontSize={"1.1rem"} fontWeight={700} color={"#A1A1A1"}>
               CLIP
@@ -50,8 +60,7 @@ const Login = () => {
               </Text>
             </Stack>
 
-            {/* Menampilkan IMEI dari state */}
-            {isConnected && imei ? ( // Check both isConnected and imei
+            {isConnected && imei ? (
               <Text
                 fontSize={"0.8rem"}
                 fontWeight={"medium"}
@@ -73,53 +82,51 @@ const Login = () => {
               </Text>
             )}
           </Stack>
-          <Stack mt={"2rem"}>
-            <Button
-              bgColor={"#FAF9F6"}
-              variant={"outline"}
-              borderRadius={"lg"}
-              borderColor={"#ECECEC"}
-              my={"0.2rem"}
-              as={Link}
-              to={`http://localhost:8080/auth/login`}
-            >
-              <Stack direction={"row"} align={"center"} justify={"center"}>
-                <FcGoogle fontSize={"1.5rem"} />
-                <Text fontSize={"0.8rem"} fontWeight={500} color={"#000000"}>
-                  Login with Google
-                </Text>
-              </Stack>
-            </Button>
+        </Stack>
 
-            {isConnected ? (
-              <Button
-                as={Link}
-                to={`/auth/beforeLoginList`}
-                bgColor={"black"}
-                borderRadius={"lg"}
-                my={"0.2rem"}
-                cursor={"pointer"}
-                _hover={{ bgColor: "blackAlpha.800" }}
-              >
-                <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
-                  Scan your items
-                </Text>
-              </Button>
-            ) : (
-              <Button
-                bgColor={"black"}
-                borderRadius={"lg"}
-                my={"0.2rem"}
-                cursor={"pointer"}
-                _hover={{ bgColor: "blackAlpha.800" }}
-                onClick={connectToDevice}
-              >
-                <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
-                  Connect
-                </Text>
-              </Button>
-            )}
-          </Stack>
+        <Stack spacing={"1rem"} mt={"2rem"} pb={"1.5rem"}>
+          <Button
+            bgColor={"#FAF9F6"}
+            variant={"outline"}
+            borderRadius={"lg"}
+            borderColor={"#ECECEC"}
+            as={Link}
+            to={`http://localhost:8080/auth/login`}
+          >
+            <Stack direction={"row"} align={"center"} justify={"center"}>
+              <FcGoogle fontSize={"1.5rem"} />
+              <Text fontSize={"0.8rem"} fontWeight={500} color={"#000000"}>
+                Login with Google
+              </Text>
+            </Stack>
+          </Button>
+
+          {isConnected ? (
+            <Button
+              as={Link}
+              to={`/auth/beforeLoginList`}
+              bgColor={"black"}
+              borderRadius={"lg"}
+              cursor={"pointer"}
+              _hover={{ bgColor: "blackAlpha.800" }}
+            >
+              <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
+                Scan your items
+              </Text>
+            </Button>
+          ) : (
+            <Button
+              bgColor={"black"}
+              borderRadius={"lg"}
+              cursor={"pointer"}
+              _hover={{ bgColor: "blackAlpha.800" }}
+              onClick={connectToDevice}
+            >
+              <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
+                Connect
+              </Text>
+            </Button>
+          )}
         </Stack>
       </Stack>
     </Stack>
