@@ -13,7 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import pb from "@/assets/Powerbank.svg";
-import AllList from "@/components/allListTemplate";
+import AllList from "@/components/AllList";
 import { useState, useEffect } from "react";
 import Lists from "@/dummy.tsx";
 import { useNavigate } from "@/router";
@@ -24,7 +24,7 @@ import { HiOutlineLogout } from "react-icons/hi";
 import useApi, { ResponseModel, useToastErrorHandler } from "@/hooks/useApi";
 import { z } from "zod";
 import { useBluetooth } from "@/providers/BluetoothProvider";
-import { FaCircleCheck } from "react-icons/fa6";
+import { FaCircle, FaCircleCheck } from "react-icons/fa6";
 import HomeList from "@/components/homeListTemplate";
 
 type List = {
@@ -50,18 +50,16 @@ const Home = () => {
 
   const listData = useSWR("/list");
 
-  console.log(listData.data);
-
   const currentList = listData.data?.data?.sort(
     (a: List, b: List) =>
       new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-  )[0];
+  )[0] ?? { items: [] };
 
-  // console.log(currentList);
-
-  // const allList = listData.data?.data;
-
-  // const itemData = useSWR<Item[]>("/item");
+  if (!currentList) {
+    console.log("No lists available");
+  } else {
+    console.log(currentList.items);
+  }
 
   useEffect(() => {
     if (auth.status === "unauthenticated") {
@@ -75,25 +73,8 @@ const Home = () => {
       return;
     }
 
-    // if (auth.status === "authenticated") {
-    //   toast({
-    //     title: "Welcome back!",
-    //     status: "success",
-    //     duration: 3000,
-    //     isClosable: true,
-    //   });
-    //   nav("/clip");
-    //   return;
-    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth]);
-
-  // const [isActive, setIsActive] = useState(false);
-  // const handleStatusClick = () => {
-  //   setIsActive(!isActive);
-  // };
-
-  // let i = 0;
 
   return (
     <>
@@ -125,6 +106,7 @@ const Home = () => {
                 boxSize={"2.75rem"}
                 objectFit={"cover"}
                 cursor={"pointer"}
+                referrerPolicy="no-referrer"
               />
             </MenuButton>
             <MenuList
@@ -133,14 +115,17 @@ const Home = () => {
               opacity={"50%"}
               shadow={"lg"}
             >
-              <MenuGroup title="Profile">
-                <MenuItem fontWeight={"normal"}>My Account</MenuItem>
+              <MenuGroup>
+                <MenuItem fontWeight={"normal"} py={"1rem"} borderRadius={"sm"}>
+                  Edit Profile
+                </MenuItem>
               </MenuGroup>
               <MenuDivider />
               <MenuItem
                 icon={<HiOutlineLogout size="1.5em" />}
                 onClick={() => auth.logout()}
                 fontWeight={"bold"}
+                py={"0.8rem"}
               >
                 Logout
               </MenuItem>
@@ -244,44 +229,70 @@ const Home = () => {
             >
               <Text fontSize={"0.8rem"} fontWeight={"normal"}>
                 {currentList?.name}
+                {" - "}
+                {currentList.items.length}
               </Text>
             </Stack>
           </Stack>
           <Stack bgColor={"#eeeeee"} borderRadius={"2xl"} p={"1rem"}>
-            {listData &&
-            Array.isArray(listData.data) &&
-            listData.data.length > 0 ? (
-              // Sort by 'createdAt' and get the latest 3 items
-              listData.data
-                .sort(
-                  (a: any, b: any) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )
-                .slice(0, 3) // Get the latest 3 items
-                .map((item: any) => {
-                  console.log("Rendering item:", item); // Debugging log
-                  return (
-                    <HomeList
-                      key={item.id} // Use item.id for the key
-                      listData={{
-                        items: [
-                          {
-                            itemName: item.name, // Accessing the name correctly
-                            itemId: item.id, // Accessing the id correctly
-                          },
-                        ],
-                      }}
-                    />
-                  );
-                })
-            ) : (
-              <Text>No items in this list</Text>
+            {currentList.items.map(
+              (item: { itemId: string; itemName: string }) => (
+                <Stack
+                  key={item.itemId}
+                  direction={"row"}
+                  alignItems={"center"}
+                  bgColor={"white"}
+                  borderRadius={"xl"}
+                  my={"0.125rem"}
+                  p={"0.75rem"}
+                  boxShadow={"sm"} // Add a shadow for better UI
+                  _hover={{ bgColor: "#f9f9f9" }} // Hover effect for interactivity
+                  transition="background-color 0.2s ease-in-out"
+                >
+                  <Stack
+                    // key={index}
+                    flexDirection={"row"}
+                    // align={"center"}
+                    justify={"space-between"}
+                    w={"100%"}
+                  >
+                    <Stack flexDirection={"row"}>
+                      <FaCircle color={"#f0e13d"} fontSize={"1.25rem"} />
+
+                      <Text
+                        fontSize={"0.9rem"}
+                        fontWeight={600}
+                        ml={"0.25rem"}
+                        wordBreak="break-word"
+                      >
+                        {item.itemName}
+                      </Text>
+                    </Stack>
+
+                    <Stack
+                      bgColor={"black"}
+                      color={"white"}
+                      px={"0.5rem"}
+                      py={"0.1rem"}
+                      borderRadius={"md"}
+                      wordBreak="break-all"
+                    >
+                      <Text
+                        fontSize={"0.7rem"}
+                        fontWeight={400}
+                        letterSpacing={"0.05rem"}
+                      >
+                        {item.itemId}
+                      </Text>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              )
             )}
 
             <Button
               as={Link}
-              to={`/list/${currentList?.id}`}
+              to={`/clip/list/${currentList?.id}`}
               color={"#000000B2"}
               fontSize={"0.75rem"}
               textAlign={"center"}
@@ -328,10 +339,9 @@ const Home = () => {
               )
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               .map((list: any) => (
-                // nanti yang di [id] dibenerin
                 <Link to={`/clip/list/${list.id}`}>
                   <AllList
-                    key={list.id} // Ensure unique key for each list
+                    key={list.id}
                     listData={{
                       items: list.items,
                       name: list.name,

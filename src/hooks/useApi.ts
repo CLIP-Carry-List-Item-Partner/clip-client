@@ -4,7 +4,7 @@ import { useToast } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
 export const baseUrl =
-  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
 
 export const instance = axios.create({
   baseURL: baseUrl,

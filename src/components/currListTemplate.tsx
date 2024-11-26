@@ -18,8 +18,8 @@ const CurrentList = ({
       borderRadius={"xl"}
       my={"0.125rem"}
       p={"0.75rem"}
-      boxShadow={"md"} // Add a shadow for better UI
-      _hover={{ bgColor: "#f9f9f9" }} // Hover effect for interactivity
+      boxShadow={"sm"}
+      _hover={{ bgColor: "#f9f9f9" }}
       transition="background-color 0.2s ease-in-out"
     >
       {listData.items.map(
@@ -29,7 +29,6 @@ const CurrentList = ({
             <Stack
               key={index}
               flexDirection={"row"}
-              // align={"center"}
               justify={"space-between"}
               w={"100%"}
             >

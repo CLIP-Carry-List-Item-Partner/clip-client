@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import pb from "@/assets/Powerbank.svg";
 import CurrTemplate from "@/components/currListTemplate.tsx";
-import AllList from "@/components/allListTemplate";
+import AllList from "@/components/AllList";
 import { useState, useEffect } from "react";
 import Lists from "@/dummy.tsx";
 import { useNavigate } from "@/router";
@@ -89,6 +89,7 @@ const List = () => {
 
   // const { data: itemData } = useSWR<Item[]>("/item");
 
+  // Auth Check
   useEffect(() => {
     if (auth.status === "loading") {
       return;

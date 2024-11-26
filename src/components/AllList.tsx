@@ -9,9 +9,6 @@ const AllList = ({
     items: { itemName: string }[];
   };
 }) => {
-  // Debugging untuk melihat data items di console
-  // console.log("ini list data:", listData.items);
-
   return (
     <Stack bgColor={"#eeeeee"} borderRadius={"2xl"} my={"0.2rem"}>
       {/* Header Section */}

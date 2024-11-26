@@ -1,6 +1,6 @@
 import { Stack, Text, Spacer, Button } from "@chakra-ui/react";
 
-const ItemTemplate2 = ({
+const ItemList = ({
   itemData,
   onClick,
   onClickEdit,
@@ -8,6 +8,8 @@ const ItemTemplate2 = ({
   itemData: {
     id: string;
     name: string;
+    // lists: string[];
+    updatedAt: string;
   };
   onClick: () => void;
   onClickEdit: () => void;
@@ -17,7 +19,7 @@ const ItemTemplate2 = ({
       border={"1px"}
       borderRadius={"xl"}
       borderColor={"#DDDDDD"}
-      shadow={"base"}
+      // shadow={"base"}
       my={"0.125rem"}
       p={"1.2rem"}
       direction={"row"}
@@ -70,4 +72,4 @@ const ItemTemplate2 = ({
   );
 };
 
-export default ItemTemplate2;
+export default ItemList;

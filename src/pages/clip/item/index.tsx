@@ -18,23 +18,24 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 // import { Items } from "@/dummy.tsx";
-import ItemTemplate2 from "@/components/itemTemplate2.tsx";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useNavigate } from "@/router";
 import useAuth from "@/hooks/useAuth";
 import useSWR from "swr";
-import { set, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { GoPlus } from "react-icons/go";
 import useApi, { ResponseModel, useToastErrorHandler } from "@/hooks/useApi";
 // import { BLECLIP } from "@/utils/useBLE";
 import { useBluetooth } from "@/providers/BluetoothProvider";
+import ItemList from "@/components/ItemList";
 
 type Item = {
   id: string;
   name: string;
+  lists: string[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -67,6 +68,7 @@ const Item = () => {
 
   const { data: itemData, mutate } = useSWR("/item");
 
+  // BLECLIP Check
   useEffect(() => {
     if (isConnected && bleClip) {
       bleClip.setAddItemCallback((newTagID) => {
@@ -75,6 +77,7 @@ const Item = () => {
     }
   }, [isConnected, bleClip]);
 
+  // Auth Check
   useEffect(() => {
     if (auth.status === "loading") {
       return;
@@ -161,7 +164,6 @@ const Item = () => {
             h={"2rem"}
             leftIcon={<GoPlus />}
             onClick={() => setModalState({ mode: "create" })}
-            // onClick={handleAddItem}
           >
             <Text fontWeight={"500"} color={"#4E4E4E"} fontSize={"0.75rem"}>
               Add Item
@@ -178,13 +180,13 @@ const Item = () => {
         itemData.data.length > 0 ? (
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           itemData.data.map((item: any) => (
-            // nanti yang di [id] dibenerin
-            // <Link to={`/clip/list/${list.id}`}>
-            <ItemTemplate2
+            <ItemList
               key={item.id} // Ensure unique key for each list
               itemData={{
                 id: item.id,
                 name: item.name,
+                // lists: item.lists,
+                updatedAt: item.updatedAt,
               }}
               onClick={() => {
                 const data = itemData.data.find((i: Item) => i.id === item.id);
@@ -199,7 +201,6 @@ const Item = () => {
                 }
               }}
             />
-            // </Link>
           ))
         ) : (
           <Stack
@@ -210,7 +211,7 @@ const Item = () => {
             borderRadius={"lg"}
             borderStyle={"dashed"}
             alignItems={"center"}
-            fontWeight={"semibold"}
+            fontWeight={"regular"}
           >
             <Text>Add your item to create a list</Text>
           </Stack>
@@ -306,6 +307,28 @@ const Item = () => {
                       {errors.name && errors.name.message}
                     </FormErrorMessage>
                   </FormControl>
+
+                  {modalState?.mode === "edit" && modalState.state ? (
+                    <Stack>
+                      <Text>
+                        Last Update: {""}
+                        {new Date(modalState.state.updatedAt).toLocaleString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "numeric",
+                            minute: "numeric",
+                          }
+                        )}
+                      </Text>
+                    </Stack>
+                  ) : (
+                    <Stack>
+                      <Text>No item selected</Text>
+                    </Stack>
+                  )}
                 </Stack>
               </form>
             )}

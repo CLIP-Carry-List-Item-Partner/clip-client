@@ -1,7 +1,7 @@
 import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { useNavigate } from "@/router";
-import { Stack, Text } from "@chakra-ui/react";
+import { Spinner, Stack, Text } from "@chakra-ui/react";
 
 const Root = () => {
   const auth = useAuth();
@@ -11,12 +11,6 @@ const Root = () => {
     if (auth.status === "unauthenticated") {
       return navigate("/auth/login");
     }
-
-    // nanti diarahkan ke sini kalau sudah terautentikasi
-    // if (auth.status === "authenticated") {
-    //   return navigate("/clip");
-    // }
-
     if (auth.status === "authenticated") {
       return navigate("/clip");
     }
@@ -27,7 +21,7 @@ const Root = () => {
   return (
     <>
       <Stack align={"center"} justify={"center"}>
-        <Text>TESSSS</Text>
+        <Spinner />
       </Stack>
     </>
   );
