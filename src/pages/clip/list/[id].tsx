@@ -15,6 +15,7 @@ import {
   Input,
   FormErrorMessage,
   ModalContent,
+  list,
 } from "@chakra-ui/react";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import CurrTemplate from "@/components/currListTemplate.tsx";
@@ -85,11 +86,14 @@ const DetailList = () => {
     try {
       const response = await api.get(`/item/${itemId}`);
       return response.data;
+
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return null;
     }
   };
+
+  // const { data: itemData } = useSWR("/item");
 
   // BLECLIP Check
   // useEffect(() => {
@@ -134,7 +138,7 @@ const DetailList = () => {
             ...prev,
             {
               id: newTagID,
-              name: item.name || `Scanned Item ${prev.length + 1}`,
+              name: item.data.name || `Scanned Item ${prev.length + 1}`,
             },
           ]);
         } else {
@@ -201,10 +205,10 @@ const DetailList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalState]);
 
-  useEffect(() => {
-    reset();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modalState]);
+  // useEffect(() => {
+  //   reset();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [modalState]);
 
   return (
     <>
@@ -228,7 +232,7 @@ const DetailList = () => {
           <Box as={"button"} onClick={() => nav(-1)}>
             <PiCaretCircleLeftFill fontSize={"2rem"} />
           </Box>
-          <Text fontSize={"1.2rem"} fontWeight={"700"} ml={"0.5rem"}>
+          <Text fontSize={"1rem"} fontWeight={"semibold"} ml={"0.5rem"}>
             {listData && listData.data ? (
               listData.data.name
             ) : (
@@ -248,7 +252,7 @@ const DetailList = () => {
               setModalState({ mode: "edit", state: listData.data })
             }
           >
-            <Text fontWeight={"500"} color={"#777777"} fontSize={"0.75rem"}>
+            <Text fontWeight={"semibold"} color={"black"} fontSize={"0.75rem"}>
               Edit
             </Text>
           </Button>
@@ -259,7 +263,7 @@ const DetailList = () => {
         <Stack
           bgColor={"#eeeeee"}
           borderRadius={"2xl"}
-          p={"1rem"}
+          p={"0.6rem"}
           h={"45rem"}
           overflowY={"auto"}
         >
@@ -300,10 +304,23 @@ const DetailList = () => {
             fontWeight={"bold"}
             fontFamily={"PlusJakartaSans"}
             fontSize={"1rem"}
+            pt={"2rem"}
           >
             {modalState?.mode === "edit"
               ? "Edit Your List"
               : "Delete Your List"}
+            {modalState?.mode === "edit" && (
+              <Stack
+                fontFamily={"PlusJakartaSans"}
+                fontWeight={"medium"}
+                fontSize={"0.8rem"}
+                pt={"0.5rem"}
+              >
+                <Text>
+                  Scan your item with the CLIP module and item will be shown.
+                </Text>
+              </Stack>
+            )}
           </ModalHeader>
 
           <ModalCloseButton />
@@ -331,19 +348,16 @@ const DetailList = () => {
                     });
                 })}
               >
-                <Stack spacing={"1rem"}>
+                <Stack spacing={"1rem"} fontFamily={"PlusJakartaSans"}>
                   <FormControl isInvalid={!!errors.name}>
-                    <FormLabel
-                      fontFamily={"PlusJakartaSans"}
-                      fontWeight={"semibold"}
-                      fontSize={"0.8rem"}
-                    >
+                    <FormLabel fontWeight={"semibold"} fontSize={"0.8rem"}>
                       List Name
                     </FormLabel>
                     <Input
                       placeholder="Input your list name"
                       {...register("name")}
                       type="text"
+                      fontWeight={"medium"}
                     />
                     <FormErrorMessage>
                       {errors.name && errors.name.message}

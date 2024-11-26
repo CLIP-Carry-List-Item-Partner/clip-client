@@ -5,7 +5,7 @@ interface BluetoothContextProps {
   bleClip: BLECLIP | null;
   isConnected: boolean;
   connectToDevice: () => void;
-  imei: string | null; // Add IMEI state
+  imei: string | null;
 }
 
 const BluetoothContext = createContext<BluetoothContextProps | undefined>(
@@ -19,7 +19,7 @@ export const BluetoothProvider = ({
 }) => {
   const [bleClip, setBleClip] = useState<BLECLIP | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [imei, setImei] = useState<string | null>(null); // Add IMEI state
+  const [imei, setImei] = useState<string | null>(null);
 
   useEffect(() => {
     const clipDevice = new BLECLIP();
@@ -28,7 +28,7 @@ export const BluetoothProvider = ({
     clipDevice.onIMEIChange((newImei) => {
       localStorage.setItem("imei", newImei);
       localStorage.setItem("status", "true");
-      setImei(newImei); // Update IMEI state here
+      setImei(newImei);
       setIsConnected(true);
     });
 
@@ -42,6 +42,18 @@ export const BluetoothProvider = ({
       bleClip.connectToBLE();
     }
   };
+
+  // Auto reconnect every 30 seconds if not connected
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isConnected && bleClip) {
+        console.log("Attempting to reconnect to Bluetooth...");
+        bleClip.connectToBLE();
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [isConnected, bleClip]);
 
   return (
     <BluetoothContext.Provider

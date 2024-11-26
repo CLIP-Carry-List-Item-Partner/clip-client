@@ -150,17 +150,22 @@ const List = () => {
             <Button
               // colorScheme={"#EEEEEE"}
               bgColor={"#EEEEEE"}
-              color={"#0B1215"}
-              fontSize={"0.75rem"}
-              fontWeight={"medium"}
-              textAlign={"justify"}
-              alignItems={"center"}
-              justifyItems={"center"}
-              borderRadius={"10px"}
+              // color={"#0B1215"}
+              // fontSize={"0.75rem"}
+              // fontWeight={"medium"}
+              px={"0.7rem"}
+              h={"2rem"}
+              borderRadius={"md"}
               leftIcon={<GoPlus size={"1rem"} />}
               onClick={() => setModalState({ mode: "create" })}
             >
-              New List
+              <Text
+                fontWeight={"semibold"}
+                color={"black"}
+                fontSize={"0.75rem"}
+              >
+                New List
+              </Text>
             </Button>
           </Stack>
           {listData && listData.data ? (

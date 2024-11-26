@@ -234,7 +234,7 @@ const Home = () => {
               </Text>
             </Stack>
           </Stack>
-          <Stack bgColor={"#eeeeee"} borderRadius={"2xl"} p={"1rem"}>
+          <Stack bgColor={"#eeeeee"} borderRadius={"2xl"} p={"0.6rem"}>
             {currentList.items.map(
               (item: { itemId: string; itemName: string }) => (
                 <Stack
@@ -243,7 +243,7 @@ const Home = () => {
                   alignItems={"center"}
                   bgColor={"white"}
                   borderRadius={"xl"}
-                  my={"0.125rem"}
+                  // my={"0.125rem"}
                   p={"0.75rem"}
                   boxShadow={"sm"} // Add a shadow for better UI
                   _hover={{ bgColor: "#f9f9f9" }} // Hover effect for interactivity
@@ -296,7 +296,7 @@ const Home = () => {
               color={"#000000B2"}
               fontSize={"0.75rem"}
               textAlign={"center"}
-              mt={"0.25rem"}
+              my={"0.6rem"}
               fontWeight={400}
               variant={"link"}
             >

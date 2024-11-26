@@ -129,10 +129,10 @@ const Item = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalState]);
 
-  useEffect(() => {
-    reset();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modalState]);
+  // useEffect(() => {
+  //   reset();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [modalState]);
 
   return (
     <>
@@ -165,7 +165,7 @@ const Item = () => {
             leftIcon={<GoPlus />}
             onClick={() => setModalState({ mode: "create" })}
           >
-            <Text fontWeight={"500"} color={"#4E4E4E"} fontSize={"0.75rem"}>
+            <Text fontWeight={"semibold"} color={"black"} fontSize={"0.75rem"}>
               Add Item
             </Text>
           </Button>
@@ -277,6 +277,15 @@ const Item = () => {
               >
                 <Stack spacing={"1rem"}>
                   <FormControl isInvalid={!!errors.id}>
+                    {!isConnected && (
+                      <Stack
+                        alignItems={"center"}
+                        color={"red.800"}
+                        mb={"0.6rem"}
+                      >
+                        <Text>Please connect to CLIP to scan your item</Text>
+                      </Stack>
+                    )}
                     <Input
                       textAlign={"center"}
                       placeholder="Your item ID will be shown here"

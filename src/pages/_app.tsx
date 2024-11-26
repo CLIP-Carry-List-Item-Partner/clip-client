@@ -14,15 +14,24 @@ const AppLayout = () => {
   if (auth.status === "loading") {
     return (
       <Stack
-        justifyItems={"center"}
+        justifyContent={"center"}
         alignItems={"center"}
         bgColor={"white"}
         minW={"320px"}
         maxW={"425px"}
         minH={"100vh"}
       >
-        <Spinner size={"xl"} />
-        <Text>Loading...</Text>
+        <Stack
+          bgColor={"#EFE43D"}
+          alignItems={"center"}
+          justifyItems={"center"}
+          p={"1rem"}
+          borderRadius={"lg"}
+          shadow={"sm"}
+        >
+          <Spinner size={"xl"} />
+          <Text>Loading...</Text>
+        </Stack>
       </Stack>
     );
   }

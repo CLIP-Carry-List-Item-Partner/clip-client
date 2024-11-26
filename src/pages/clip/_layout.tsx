@@ -49,7 +49,7 @@ const Navbar = () => {
       icon: item,
     },
     {
-      route: "/clip/profile",
+      route: "/auth/user/profile",
       label: "Profile",
       icon: profile,
     },

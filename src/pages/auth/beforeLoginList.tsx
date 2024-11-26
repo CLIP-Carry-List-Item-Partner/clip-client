@@ -128,13 +128,20 @@ const BeforeLoginList = () => {
         {/* List Items End */}
         <Link to="/auth/login">
           <Button
-            mt={"0.5rem"}
+            my={"1rem"}
             w={"full"}
             bgColor={"black"}
             color={"white"}
+            borderRadius={"lg"}
             _hover={{ bgColor: "gray.800" }}
           >
-            Back
+            <Text
+              fontFamily={"PlusJakartaSans"}
+              fontWeight={"medium"}
+              fontSize={"0.8rem"}
+            >
+              Back
+            </Text>
           </Button>
         </Link>
       </Stack>
