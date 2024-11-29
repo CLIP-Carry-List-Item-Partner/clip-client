@@ -16,6 +16,7 @@ import {
   FormErrorMessage,
   ModalContent,
   list,
+  ModalFooter,
 } from "@chakra-ui/react";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import CurrTemplate from "@/components/currListTemplate.tsx";
@@ -65,7 +66,7 @@ type ListDataFillable = z.infer<typeof listUpdateSchema>;
 
 type ModalState = {
   state?: ListUpdate;
-  id?: string;
+  id: number;
   mode: "edit" | "delete";
 };
 
@@ -73,11 +74,13 @@ const DetailList = () => {
   const { id } = useParams();
   const auth = useAuth();
   const nav = useNavigate();
-  const size = ["full"];
+  const mainSize = ["full"];
+  const deleteSize = ["sm"];
   const toast = useToast();
   const errorHandler = useToastErrorHandler();
   const { bleClip, isConnected } = useBluetooth();
   const api = useApi();
+  const [deleteConfirmModal, setDeteleConfirmModal] = useState(false);
   const [scannedItems, setScannedItems] = useState<ScannedItems[]>([]);
 
   const { data: listData, mutate } = useSWR(`/list/${id}`);
@@ -234,7 +237,7 @@ const DetailList = () => {
           </Box>
           <Text fontSize={"1rem"} fontWeight={"semibold"} ml={"0.5rem"}>
             {listData && listData.data ? (
-              listData.data.name
+              listData?.data?.name
             ) : (
               <Text>Loading...</Text>
             )}
@@ -249,11 +252,15 @@ const DetailList = () => {
             px={"1rem"}
             h={"1.7rem"}
             onClick={() =>
-              setModalState({ mode: "edit", state: listData.data })
+              setModalState({
+                mode: "edit",
+                id: listData?.data?.id,
+                state: listData?.data,
+              })
             }
           >
             <Text fontWeight={"semibold"} color={"black"} fontSize={"0.75rem"}>
-              Edit
+              Edit {listData?.data?.id}
             </Text>
           </Button>
         </Stack>
@@ -295,7 +302,7 @@ const DetailList = () => {
         isCentered
         isOpen={!!modalState}
         onClose={() => setModalState(undefined)}
-        size={size}
+        size={mainSize}
       >
         {/* <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" /> */}
 
@@ -330,22 +337,24 @@ const DetailList = () => {
               <form
                 id="edit-data"
                 onSubmit={handleSubmit((data) => {
-                  api
-                    .put<ResponseModel>(`/list/update/${modalState.id}`, data)
-                    .then((res) => {
-                      toast({
-                        title: "Item updated successfully",
-                        status: "success",
-                        duration: 3000,
-                        isClosable: true,
-                        description: res.data.message,
+                  if (modalState.id) {
+                    api
+                      .put<ResponseModel>(`/list/update/${modalState.id}`, data)
+                      .then((res) => {
+                        toast({
+                          title: "Item updated successfully",
+                          status: "success",
+                          duration: 3000,
+                          isClosable: true,
+                          description: res.data.message,
+                        });
+                      })
+                      .catch(errorHandler)
+                      .finally(() => {
+                        setModalState(undefined);
+                        mutate();
                       });
-                    })
-                    .catch(errorHandler)
-                    .finally(() => {
-                      setModalState(undefined);
-                      mutate();
-                    });
+                  }
                 })}
               >
                 <Stack spacing={"1rem"} fontFamily={"PlusJakartaSans"}>
@@ -409,9 +418,102 @@ const DetailList = () => {
               </form>
             )}
           </ModalBody>
+
+          <ModalFooter justifyContent={"center"}>
+            {modalState?.mode === "edit" && (
+              <Stack
+                flexDirection={"row"}
+                fontFamily={"PlusJakartaSans"}
+                w={"full"}
+                alignItems={"center"}
+                justifyItems={"center"}
+                justifyContent={"center"}
+              >
+                <Button
+                  w={"full"}
+                  h={"3rem"}
+                  // bgColor={"black"}
+                  // color={"#F0E13D"}
+                  fontWeight={"medium"}
+                  fontSize={"0.8rem"}
+                  borderRadius={"10px"}
+                  onClick={() => setDeteleConfirmModal(true)}
+                >
+                  Delete
+                </Button>
+                <Button
+                  type="submit"
+                  form="edit-data"
+                  w={"full"}
+                  h={"3rem"}
+                  bgColor={"black"}
+                  color={"#F0E13D"}
+                  fontWeight={"medium"}
+                  fontSize={"0.8rem"}
+                  borderRadius={"10px"}
+                >
+                  Update
+                </Button>
+              </Stack>
+            )}
+          </ModalFooter>
         </ModalContent>
       </Modal>
       {/* Modal End */}
+
+      {/* Delete Confirm Modal Start */}
+      <Modal
+        isOpen={deleteConfirmModal}
+        onClose={() => setDeteleConfirmModal(false)}
+        isCentered
+        size={deleteSize}
+      >
+        <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" />
+        <ModalContent fontFamily={"PlusJakartaSans"} borderRadius={"15px"}>
+          <ModalHeader>Delete List</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>Are you sure you want to delete this list?</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="red"
+              onClick={() => {
+                if (!modalState?.id) {
+                  console.log(modalState?.id);
+                  toast({
+                    title: "Error",
+                    description: "Invalid List ID",
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                  });
+                  return;
+                }
+                api
+                  .delete(`/list/delete/${modalState?.id}`)
+                  .then((res) => {
+                    toast({
+                      title: "List deleted successfully",
+                      status: "success",
+                      duration: 3000,
+                      isClosable: true,
+                      description: res.data.message,
+                    });
+                  })
+                  .catch(errorHandler)
+                  .finally(() => {
+                    setDeteleConfirmModal(false);
+                    mutate();
+                    nav("/clip/list");
+                  });
+              }}
+            >
+              Delete
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

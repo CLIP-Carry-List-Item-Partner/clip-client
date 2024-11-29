@@ -25,6 +25,7 @@ export const BluetoothProvider = ({
     const clipDevice = new BLECLIP();
     setBleClip(clipDevice);
 
+    // IMEI change callback
     clipDevice.onIMEIChange((newImei) => {
       localStorage.setItem("imei", newImei);
       localStorage.setItem("status", "true");
@@ -32,7 +33,23 @@ export const BluetoothProvider = ({
       setIsConnected(true);
     });
 
+    // Handle GATT disconnection and attempt to reconnect
+    const handleDisconnection = async () => {
+      console.warn("GATT Server disconnected. Attempting to reconnect...");
+      setIsConnected(false);
+      try {
+        await clipDevice.reconnect();
+        setIsConnected(true);
+        console.log("Reconnected to GATT Server.");
+      } catch (error) {
+        console.error("Failed to reconnect:", error);
+      }
+    };
+
+    clipDevice.addDisconnectionListener(handleDisconnection);
+
     return () => {
+      clipDevice.removeDisconnectionListener(handleDisconnection);
       clipDevice.disconnect();
     };
   }, []);
@@ -42,18 +59,6 @@ export const BluetoothProvider = ({
       bleClip.connectToBLE();
     }
   };
-
-  // Auto reconnect every 30 seconds if not connected
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!isConnected && bleClip) {
-        console.log("Attempting to reconnect to Bluetooth...");
-        bleClip.connectToBLE();
-      }
-    }, 30000); // 30 seconds
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [isConnected, bleClip]);
 
   return (
     <BluetoothContext.Provider

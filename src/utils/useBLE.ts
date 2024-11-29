@@ -3,9 +3,9 @@ export class BLECLIP {
   private isREQDatatoCLIP: boolean;
   private clipIMEI: string = "KOSONG";
   private imeiChangeCallback?: (newImei: string) => void;
-  private addItemCallback?: (newTagID: string) => void; // Callback for adding items
-  public status: boolean = false; // Status to track connection
-  private device?: BluetoothDevice; // Add device reference for disconnection
+  private addItemCallback?: (newTagID: string) => void;
+  public status: boolean = false;
+  private device?: BluetoothDevice;
   private serviceUID: BluetoothServiceUUID =
     "65ed019f-49f7-4267-9b56-e90c2fd4b3e5";
   private characteristicUID: BluetoothCharacteristicUUID =
@@ -15,20 +15,19 @@ export class BLECLIP {
     this.isREQDatatoCLIP = false;
   }
 
-  // Method to set the callback for adding items
   public setAddItemCallback(callback: (newTagID: string) => void) {
-    if (typeof callback === 'function') {
+    if (typeof callback === "function") {
       this.addItemCallback = callback;
     } else {
-      console.warn('Provided callback is not a function.');
+      console.warn("Provided callback is not a function.");
     }
   }
 
   public onIMEIChange(callback: (newImei: string) => void) {
-    if (typeof callback === 'function') {
+    if (typeof callback === "function") {
       this.imeiChangeCallback = callback;
     } else {
-      console.warn('Provided callback is not a function.');
+      console.warn("Provided callback is not a function.");
     }
   }
 
@@ -44,50 +43,72 @@ export class BLECLIP {
         optionalServices: [this.serviceUID],
       })
       .then((device) => {
-        this.device = device; // Store device reference for later use
+        this.device = device;
+        this.device.addEventListener(
+          "gattserverdisconnected",
+          this.onDisconnected.bind(this)
+        ); // Add event listener for disconnection
         return device.gatt?.connect();
       })
-      .then((server) => {
-        return server?.getPrimaryService(this.serviceUID);
-      })
-      .then((service) => {
-        return service?.getCharacteristic(this.characteristicUID);
-      })
+      .then((server) => server?.getPrimaryService(this.serviceUID))
+      .then((service) => service?.getCharacteristic(this.characteristicUID))
       .then((characteristic) => {
         this.writeDatatoCLIP = characteristic;
         this.isREQDatatoCLIP = true;
-        this.status = true; // Set status to true when connected
+        this.status = true;
         console.log("Connected");
-        const myCharacteristic = characteristic;
-        return myCharacteristic
-          ?.startNotifications()
-          .then(() => {
-            myCharacteristic.addEventListener(
-              "characteristicvaluechanged",
-              this.responseFromBLE.bind(this)
-            );
-          })
-          .catch((err: any) => {
-            console.log(err);
-          });
+        return characteristic?.startNotifications().then(() => {
+          characteristic.addEventListener(
+            "characteristicvaluechanged",
+            this.responseFromBLE.bind(this)
+          );
+        });
       })
       .then(() => {
         this.requestToBLE("OPEN");
       })
       .catch((error) => {
-        console.log(error);
-        this.status = false; // Set status to false if connection fails
+        console.error("Connection failed:", error);
+        this.status = false;
       });
   }
 
-  // New disconnect method
   public disconnect() {
     if (this.device && this.device.gatt?.connected) {
       console.log("Disconnecting from BLE device...");
       this.device.gatt.disconnect();
-      this.status = false; // Update status to false after disconnection
+      this.status = false;
+    }
+  }
+
+  public async reconnect() {
+    if (this.device) {
+      try {
+        await this.device.gatt?.connect();
+        console.log("Reconnected to BLE device.");
+      } catch (error) {
+        console.error("Reconnection failed:", error);
+        throw error;
+      }
     } else {
-      console.log("No device connected to disconnect.");
+      console.error("No device available to reconnect.");
+    }
+  }
+
+  private onDisconnected() {
+    console.warn("Device disconnected.");
+    this.status = false;
+  }
+
+  public addDisconnectionListener(callback: () => void) {
+    if (this.device) {
+      this.device.addEventListener("gattserverdisconnected", callback);
+    }
+  }
+
+  public removeDisconnectionListener(callback: () => void) {
+    if (this.device) {
+      this.device.removeEventListener("gattserverdisconnected", callback);
     }
   }
 
@@ -98,11 +119,7 @@ export class BLECLIP {
     const arr = msg.split("#");
     switch (arr[0]) {
       case "OPEN":
-        this.writeToBLE(msg);
-        break;
       case "CLOSE":
-        this.writeToBLE(msg);
-        break;
       case "WRITE":
         this.writeToBLE(msg);
         break;
@@ -116,11 +133,10 @@ export class BLECLIP {
     this.writeDatatoCLIP
       ?.writeValue(encoder.encode(msg))
       .then(() => {
-        console.log(msg);
-        console.log("Sent");
+        console.log("Message sent:", msg);
       })
       .catch((e) => {
-        console.log(e);
+        console.error("Write error:", e);
       });
   }
 
@@ -134,7 +150,6 @@ export class BLECLIP {
       case "OPEN": {
         this.clipIMEI = arr[1];
         console.log(`clip IMEI = ${this.clipIMEI}`);
-
         if (this.imeiChangeCallback) {
           this.imeiChangeCallback(this.clipIMEI);
         }
@@ -143,12 +158,9 @@ export class BLECLIP {
       default: {
         const tagID = resDecode;
         console.log(`tagID = ${resDecode}`);
-        
-        // Call the add item callback to update the scannedItems state in BeforeLoginList
         if (this.addItemCallback) {
           this.addItemCallback(tagID);
         }
-
         break;
       }
     }
