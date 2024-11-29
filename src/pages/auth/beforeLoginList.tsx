@@ -2,7 +2,6 @@ import { Stack, Text, Button, useToast } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ItemTemplate1 from "@/components/itemTemplate1";
-// import { BLECLIP } from "@/utils/useBLE";
 import { useBluetooth } from "@/providers/BluetoothProvider";
 
 type ScannedItems = {
@@ -16,6 +15,12 @@ const BeforeLoginList = () => {
   const [deletedItems, setDeletedItems] = useState<string[]>([]);
   const toast = useToast();
 
+  // Ambil lastItemNumber dari localStorage atau mulai dari 1 jika belum ada
+  let lastItemNumber = parseInt(
+    localStorage.getItem("lastItemNumber") || "1",
+    10
+  );
+
   useEffect(() => {
     if (isConnected && bleClip) {
       bleClip.setAddItemCallback((newTagID) => {
@@ -23,10 +28,19 @@ const BeforeLoginList = () => {
           const isExisting = prevItems.some((item) => item.id === newTagID);
 
           if (!isExisting) {
+            // Jika daftar kosong, reset lastItemNumber kembali ke 1
+            if (prevItems.length === 0) {
+              lastItemNumber = 1;
+              localStorage.setItem("lastItemNumber", lastItemNumber.toString());
+            }
+
             const newItem = {
               id: newTagID,
-              name: `Item ${prevItems.length + 1}`,
+              name: `Item ${lastItemNumber}`,
             };
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            lastItemNumber += 1;
+            localStorage.setItem("lastItemNumber", lastItemNumber.toString());
             return [...prevItems, newItem];
           } else {
             console.log(`TagID ${newTagID} already exists.`);
@@ -34,7 +48,7 @@ const BeforeLoginList = () => {
               title: "Tag already exists",
               description: `TagID ${newTagID} already exists.`,
               status: "warning",
-              duration: 3000,
+              duration: 2000,
               isClosable: true,
             });
             return prevItems;
@@ -42,7 +56,6 @@ const BeforeLoginList = () => {
         });
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, bleClip]);
 
   const handleDelete = (id: string) => {
@@ -50,6 +63,11 @@ const BeforeLoginList = () => {
     setScannedItems(updatedItems);
     setDeletedItems([...deletedItems, id]);
     localStorage.setItem("scannedItems", JSON.stringify(updatedItems));
+
+    // Jika semua item dihapus, reset lastItemNumber kembali ke 1
+    if (updatedItems.length === 0) {
+      localStorage.setItem("lastItemNumber", "1");
+    }
   };
 
   return (
@@ -115,10 +133,10 @@ const BeforeLoginList = () => {
               </Text>
             </Stack>
           ) : (
-            scannedItems.map((item, index) => (
+            scannedItems.map((item) => (
               <ItemTemplate1
-                key={index}
-                name={`Tag ${index + 1}`}
+                key={item.id}
+                name={item.name}
                 id={item.id}
                 onDelete={handleDelete}
               />
