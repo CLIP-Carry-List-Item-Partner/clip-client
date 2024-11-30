@@ -111,6 +111,7 @@ const DetailList = () => {
             status: "warning",
             duration: 3000,
             isClosable: true,
+            position: "top",
           });
           return;
         }
@@ -540,7 +541,7 @@ const DetailList = () => {
                   fontSize={"0.8rem"}
                   borderRadius={"10px"}
                 >
-                  Update
+                  Save
                 </Button>
               </Stack>
             )}

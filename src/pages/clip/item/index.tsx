@@ -264,6 +264,7 @@ const Item = () => {
                           status: "success",
                           duration: 3000,
                           isClosable: true,
+                          position: "top",
                           description: res.data.message,
                         });
                       })
@@ -350,10 +351,11 @@ const Item = () => {
                     .post<ResponseModel>("/item/create", data)
                     .then((res) => {
                       toast({
-                        title: "List created successfully",
+                        title: "Item created successfully",
                         status: "success",
                         duration: 3000,
                         isClosable: true,
+                        position: "top",
                         description: res.data.message,
                       });
                     })
