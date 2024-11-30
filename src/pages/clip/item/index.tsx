@@ -283,7 +283,7 @@ const Item = () => {
                         color={"red.800"}
                         mb={"0.6rem"}
                       >
-                        <Text>Please connect to CLIP to scan your item</Text>
+                        <Text>Please connect to scan your item</Text>
                       </Stack>
                     )}
                     <Input

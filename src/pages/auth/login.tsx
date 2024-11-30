@@ -42,7 +42,7 @@ const Login = () => {
           <Image
             src={onBoard}
             alt="onBoard"
-            w={"75%"}
+            w={"100%"}
             maxW={"full"}
             objectFit={"contain"}
           />

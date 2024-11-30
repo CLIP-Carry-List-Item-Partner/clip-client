@@ -237,6 +237,7 @@ const Home = () => {
                 {currentList?.name}
                 {" - "}
                 {currentList.items.length}
+                {currentList.items.length > 1 ? " items" : " item"}
               </Text>
             </Stack>
           </Stack>

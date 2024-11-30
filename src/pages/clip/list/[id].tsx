@@ -32,31 +32,28 @@ import useApi, { ResponseModel, useToastErrorHandler } from "@/hooks/useApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 
-type ListUpdate = {
-  id: string;
-  name: string;
-  createdAt: Date;
-  updatedAt: Date;
-  items: {
-    id: string;
-    name: string;
-  }[];
-};
-
 type ScannedItems = {
   id: string;
   name: string;
 };
 
+type ListUpdate = {
+  id: string;
+  name: string;
+  // createdAt: Date;
+  // updatedAt: Date;
+  items: ScannedItems[];
+};
+
 const listUpdateSchema = z.object({
   name: z.string().min(3).max(255),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  // createdAt: z.date(),
+  // updatedAt: z.date(),
   items: z
     .array(
       z.object({
         id: z.string(),
-        name: z.string().min(3).max(255),
+        // name: z.string().min(3).max(255),
       })
     )
     .optional(),
@@ -96,35 +93,19 @@ const DetailList = () => {
     }
   };
 
-  // const { data: itemData } = useSWR("/item");
-
-  // BLECLIP Check
-  // useEffect(() => {
-  //   if (isConnected && bleClip) {
-  //     bleClip.setAddItemCallback((newTagID) => {
-  //       const existingItem = scannedItems.some((item) => item.id === newTagID);
-  //       if (!existingItem) {
-  //         setScannedItems((prev) => [
-  //           ...prev,
-  //           { id: newTagID, name: `Scanned Item ${prev.length + 1}` },
-  //         ]);
-  //       } else {
-  //         toast({
-  //           title: "Item already exists",
-  //           status: "warning",
-  //           duration: 3000,
-  //           isClosable: true,
-  //         });
-  //       }
-  //     });
-  //   }
-  // }, [isConnected, bleClip, scannedItems, toast]);
-
   useEffect(() => {
     if (isConnected && bleClip) {
       bleClip.setAddItemCallback(async (newTagID) => {
-        const existingItem = scannedItems.some((item) => item.id === newTagID);
-        if (existingItem) {
+        const existInScanned = scannedItems.some(
+          (item) => item.id === newTagID
+        );
+
+        const existInList = listData?.data?.items.some(
+          (item: { id: string; item: { id: string } }) =>
+            item.id === newTagID || item.item?.id === newTagID
+        );
+
+        if (existInScanned || existInList) {
           toast({
             title: "Item already exists",
             status: "warning",
@@ -133,6 +114,8 @@ const DetailList = () => {
           });
           return;
         }
+
+        console.log("Current list items:", listData?.data.items);
 
         // Validate if item exists in the /item endpoint
         const item = await validateItem(newTagID);
@@ -156,7 +139,7 @@ const DetailList = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected, bleClip, scannedItems, toast]);
+  }, [isConnected, bleClip, scannedItems, toast, listData]);
 
   // Auth Check
   useEffect(() => {
@@ -181,35 +164,82 @@ const DetailList = () => {
     handleSubmit,
     register,
     reset,
+    // control,
     formState: { errors },
     setValue,
   } = useForm<ListDataFillable>({
     resolver: zodResolver(listUpdateSchema),
     defaultValues: {
-      name: listData?.data.name || "",
-      items: scannedItems,
+      name: listData?.data?.name || "",
+      items: listData?.data?.items || [],
     },
   });
 
   useEffect(() => {
-    if (scannedItems) {
-      setValue("items", [...(listData?.data.items || []), ...scannedItems]);
+    // Mendapatkan item yang sudah ada di list
+    const existingItems =
+      listData?.data?.items
+        ?.map((item: { id: string }) => ({ id: item.id }))
+        .filter((item) => item.id) || [];
+    console.log("Existing Items:", existingItems);
+
+    // Memvalidasi item yang discan
+    const scannedValidItems = scannedItems
+      .map((item) => ({ id: item.id }))
+      .filter((item) => item.id);
+    console.log("Valid Scanned Items:", scannedValidItems);
+
+    // Menggabungkan existingItems dan scannedValidItems tanpa duplikasi
+    const mergedItems = [...existingItems, ...scannedValidItems].reduce(
+      (acc, current) => {
+        if (!acc.find((item) => item.id === current.id)) {
+          acc.push(current);
+        }
+        return acc;
+      },
+      [] as { id: string }[]
+    );
+
+    console.log("Merged Items (Final):", mergedItems);
+
+    // Menghindari setValue jika tidak ada perubahan
+    setValue("items", mergedItems);
+  }, [scannedItems, listData?.data?.items, setValue]);
+
+  // Reset modal state saat modal dibuka
+  useEffect(() => {
+    if (listData?.data) {
+      reset({
+        name: listData?.data?.name,
+        items: listData?.data?.items.map((item: { id: string }) => ({
+          id: item.id,
+        })),
+      });
     }
-  }, [scannedItems, listData?.data.items, setValue]);
+  }, [listData, reset]);
+
+  useEffect(() => {
+    if (listData) {
+      reset({
+        name: listData?.data?.name,
+        items: listData?.data?.items,
+      });
+    }
+  }, [listData, reset]);
 
   const [modalState, setModalState] = useState<ModalState | undefined>();
 
   useEffect(() => {
-    if (modalState && modalState.mode === "edit") {
-      reset({
-        name: modalState.state?.name,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setScannedItems([]);
   }, [modalState]);
 
   // useEffect(() => {
-  //   reset();
+  //   if (modalState && modalState.mode === "edit") {
+  //     reset({
+  //       name: modalState?.state?.name,
+  //       items: modalState?.state?.items,
+  //     });
+  //   }
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [modalState]);
 
@@ -260,7 +290,7 @@ const DetailList = () => {
             }
           >
             <Text fontWeight={"semibold"} color={"black"} fontSize={"0.75rem"}>
-              Edit {listData?.data?.id}
+              Edit
             </Text>
           </Button>
         </Stack>
@@ -269,7 +299,7 @@ const DetailList = () => {
         {/* <-- Current List Start --> */}
         <Stack
           bgColor={"#eeeeee"}
-          borderRadius={"2xl"}
+          borderRadius={"xl"}
           p={"0.6rem"}
           h={"45rem"}
           overflowY={"auto"}
@@ -301,7 +331,10 @@ const DetailList = () => {
       <Modal
         isCentered
         isOpen={!!modalState}
-        onClose={() => setModalState(undefined)}
+        onClose={() => {
+          setModalState(undefined);
+          setScannedItems([]); // Reset scanned items when modal closes
+        }}
         size={mainSize}
       >
         {/* <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" /> */}
@@ -337,24 +370,40 @@ const DetailList = () => {
               <form
                 id="edit-data"
                 onSubmit={handleSubmit((data) => {
-                  if (modalState.id) {
-                    api
-                      .put<ResponseModel>(`/list/update/${modalState.id}`, data)
-                      .then((res) => {
-                        toast({
-                          title: "Item updated successfully",
-                          status: "success",
-                          duration: 3000,
-                          isClosable: true,
-                          description: res.data.message,
-                        });
-                      })
-                      .catch(errorHandler)
-                      .finally(() => {
-                        setModalState(undefined);
-                        mutate();
+                  const requestData = {
+                    name: data.name,
+                    // Ensure items is either an empty array or valid items
+                    items:
+                      Array.isArray(data.items) && data.items?.length > 0
+                        ? data.items?.map((item) => ({ id: item.id }))
+                        : [],
+                  };
+
+                  console.log(
+                    "Request Data: ",
+                    JSON.stringify(requestData, null, 2)
+                  );
+
+                  api
+                    .put<ResponseModel>(
+                      `/list/update/${modalState?.id}`,
+                      requestData
+                    )
+                    .then((res) => {
+                      toast({
+                        title: "List updated successfully",
+                        status: "success",
+                        duration: 3000,
+                        isClosable: true,
+                        description: res.data.message,
                       });
-                  }
+                    })
+                    .catch(errorHandler)
+                    .finally(() => {
+                      setModalState(undefined);
+                      mutate();
+                      setScannedItems([]);
+                    });
                 })}
               >
                 <Stack spacing={"1rem"} fontFamily={"PlusJakartaSans"}>
@@ -372,25 +421,27 @@ const DetailList = () => {
                       {errors.name && errors.name.message}
                     </FormErrorMessage>
                   </FormControl>
-                  <FormControl
-                    isInvalid={!!errors.items}
-                    fontFamily={"PlusJakartaSans"}
-                  >
+                  <FormControl isInvalid={!!errors.items}>
                     <FormLabel fontWeight={"semibold"} fontSize={"0.8rem"}>
-                      Item List
+                      Items
                     </FormLabel>
+
                     <Stack
                       spacing={2}
                       bgColor={"#EEEEEE"}
                       borderRadius={"xl"}
                       p={"0.6rem"}
                     >
-                      {listData && listData.data.items.length > 0 ? (
-                        [...listData.data.items, ...scannedItems].map(
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          (item: any) => (
+                      {listData?.data?.items &&
+                      Array.isArray(listData?.data?.items) ? (
+                        [...(listData?.data?.items || []), ...scannedItems]
+                          .length > 0 ? (
+                          [
+                            ...(listData?.data?.items || []),
+                            ...scannedItems,
+                          ].map((item, index) => (
                             <CurrTemplate
-                              key={item.id || item.item.id}
+                              key={`${item.id || item.item.id}-${index}`}
                               listData={{
                                 items: [
                                   {
@@ -400,20 +451,49 @@ const DetailList = () => {
                                 ],
                               }}
                             />
-                          )
+                          ))
+                        ) : (
+                          <Stack
+                            border={"1px"}
+                            borderStyle={"dashed"}
+                            borderColor={"black"}
+                            w={"full"}
+                            borderRadius={"md"}
+                            alignItems={"center"}
+                            p={"0.6rem"}
+                          >
+                            <Text>
+                              No items added. Please scan an item to proceed.
+                            </Text>
+                          </Stack>
                         )
                       ) : (
-                        <Text>Loading items...</Text>
+                        <Stack
+                          border={"1px"}
+                          borderStyle={"dashed"}
+                          borderColor={"black"}
+                          w={"full"}
+                          borderRadius={"md"}
+                          alignItems={"center"}
+                          p={"0.6rem"}
+                        >
+                          <Text>Scan your item</Text>
+                        </Stack>
                       )}
                     </Stack>
-
-                    {!!errors.items && (
-                      <Text fontSize={"sm"} color={"red.500"} mt={2}>
-                        {errors.items.message}
-                      </Text>
+                    {!isConnected && (
+                      <Stack
+                        alignItems={"center"}
+                        color={"red.800"}
+                        mt={"0.8rem"}
+                      >
+                        <Text>Please connect to scan your item</Text>
+                      </Stack>
                     )}
+                    <FormErrorMessage>
+                      {errors.items && errors.items.message}
+                    </FormErrorMessage>
                   </FormControl>
-                  ;
                 </Stack>
               </form>
             )}
@@ -432,8 +512,6 @@ const DetailList = () => {
                 <Button
                   w={"full"}
                   h={"3rem"}
-                  // bgColor={"black"}
-                  // color={"#F0E13D"}
                   fontWeight={"medium"}
                   fontSize={"0.8rem"}
                   borderRadius={"10px"}
@@ -480,7 +558,6 @@ const DetailList = () => {
               colorScheme="red"
               onClick={() => {
                 if (!modalState?.id) {
-                  console.log(modalState?.id);
                   toast({
                     title: "Error",
                     description: "Invalid List ID",
@@ -514,6 +591,7 @@ const DetailList = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      {/* Delete Confirm Modal End */}
     </>
   );
 };

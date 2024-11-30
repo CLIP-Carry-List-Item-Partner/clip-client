@@ -1,4 +1,4 @@
-import { Stack, Text, Spacer } from "@chakra-ui/react";
+import { Stack, Text } from "@chakra-ui/react";
 import { FaCircle } from "react-icons/fa";
 
 const CurrentList = ({
@@ -8,14 +8,12 @@ const CurrentList = ({
     items: { itemName: string; itemId: string }[];
   };
 }) => {
-  // console.log("ini list data:", listData.items);
-
   return (
     <Stack
       direction={"row"}
       alignItems={"center"}
       bgColor={"white"}
-      borderRadius={"xl"}
+      borderRadius={"md"}
       my={"0.125rem"}
       p={"0.75rem"}
       boxShadow={"sm"}
