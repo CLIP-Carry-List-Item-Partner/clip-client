@@ -322,7 +322,18 @@ const DetailList = () => {
               />
             ))
           ) : (
-            <Text>No items in this list</Text>
+            <Stack
+              border={"1px"}
+              borderStyle={"dashed"}
+              borderColor={"black"}
+              w={"full"}
+              borderRadius={"md"}
+              alignItems={"center"}
+              p={"0.6rem"}
+              textAlign={"center"}
+            >
+              <Text>No items added, please scan an item.</Text>
+            </Stack>
           )}
         </Stack>
       </Stack>
@@ -461,10 +472,9 @@ const DetailList = () => {
                             borderRadius={"md"}
                             alignItems={"center"}
                             p={"0.6rem"}
+                            textAlign={"center"}
                           >
-                            <Text>
-                              No items added. Please scan an item to proceed.
-                            </Text>
+                            <Text>No items added, please scan an item.</Text>
                           </Stack>
                         )
                       ) : (
