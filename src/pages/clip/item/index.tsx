@@ -64,7 +64,9 @@ const Item = () => {
   const toast = useToast();
   const api = useApi();
   const size = ["sm"];
-  const [scannedItems, setScannedItems] = useState<string | null>(null);
+  const [scannedItems, setScannedItems] = useState<string | undefined>(
+    undefined
+  );
 
   const { data: itemData, mutate } = useSWR("/item");
 
@@ -114,25 +116,32 @@ const Item = () => {
   useEffect(() => {
     if (scannedItems) {
       setValue("id", scannedItems);
+      reset((prev) => ({
+        ...prev,
+        id: scannedItems,
+      }));
     }
-  }, [scannedItems, setValue]);
+  }, [scannedItems, setValue, reset]);
 
   const [modalState, setModalState] = useState<ModalState | undefined>();
 
   useEffect(() => {
     if (modalState && modalState.mode === "edit") {
       reset({
-        id: modalState.state?.id,
-        name: modalState.state?.name,
+        id: modalState.state?.id || "",
+        name: modalState.state?.name || "",
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modalState]);
+  }, [modalState, reset, scannedItems]);
 
-  // useEffect(() => {
-  //   reset();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [modalState]);
+  useEffect(() => {
+    if (modalState && modalState.mode === "create") {
+      reset({
+        id: modalState.state?.id || "",
+        name: modalState.state?.name || "",
+      });
+    }
+  }, [modalState, reset, scannedItems]);
 
   return (
     <>
@@ -363,7 +372,7 @@ const Item = () => {
                     .finally(() => {
                       setModalState(undefined);
                       mutate();
-                      setScannedItems(null);
+                      setScannedItems("");
                     });
                 })}
               >
@@ -384,7 +393,7 @@ const Item = () => {
                       bgColor={"black"}
                       color={"white"}
                       {...register("id")}
-                      // value={scannedItems!}
+                      value={scannedItems!}
                       readOnly
                     />
 
