@@ -134,7 +134,13 @@ const Home = () => {
               shadow={"lg"}
             >
               <MenuGroup title="Profile">
-                <MenuItem fontWeight={"normal"}>My Account</MenuItem>
+                <MenuItem
+                  as={Link}
+                  to={"/auth/user/profile"}
+                  fontWeight={"normal"}
+                >
+                  My Account
+                </MenuItem>
               </MenuGroup>
               <MenuDivider />
               <MenuItem

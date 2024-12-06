@@ -8,6 +8,7 @@ export type Path =
   | `/auth/beforeLoginList`
   | `/auth/googleCallback`
   | `/auth/login`
+  | `/auth/user/profile`
   | `/clip`
   | `/clip/currentList`
   | `/clip/item`
