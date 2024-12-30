@@ -7,9 +7,9 @@ import { useState, useEffect } from "react";
 
 const CurrentList = () => {
   const [isZonk, setIsZonk] = useState(false); // Liat ada item apa nggak di List dummy data
-  let i = 1; // Index List dummy data
+  const i = 1; // Index List dummy data
 
-  // cek apakah ada item di List dummy data sesuai index
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const hasItems = Lists[i].items.length > 0;
     if (!hasItems) {
@@ -81,7 +81,13 @@ const CurrentList = () => {
           overflowY={"auto"}
         >
           {Lists[i].items.map((item, index) => (
-            <CurrTemplate key={index} {...item} />
+            <CurrTemplate
+              listData={{
+                items: [],
+              }}
+              key={index}
+              {...item}
+            />
           ))}
         </Stack>
       )}
