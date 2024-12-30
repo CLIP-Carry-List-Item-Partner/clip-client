@@ -1,4 +1,5 @@
 /// <reference types="web-bluetooth" />
+
 export class BLECLIP {
   private writeDatatoCLIP?: BluetoothRemoteGATTCharacteristic;
   private isREQDatatoCLIP: boolean;

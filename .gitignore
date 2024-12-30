@@ -30,3 +30,5 @@ dist-ssr
 .vercel
 # -- removed due to errors in cloudflare pages - just ignore local lockb
 bun.lockb
+
+*.tsbuildinfo
