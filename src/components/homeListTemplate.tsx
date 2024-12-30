@@ -1,27 +1,24 @@
 import { Stack, Text } from "@chakra-ui/react";
 import { FaCircle } from "react-icons/fa";
 
-const CurrentList = ({
+const HomeList = ({
   listData,
 }: {
-  listData: {
-    items: { itemName: string; itemId: string }[];
-  };
+  listData: { items: { itemName: string; itemId: string }[] };
 }) => {
   return (
     <Stack
       direction={"row"}
       alignItems={"center"}
       bgColor={"white"}
-      borderRadius={"md"}
+      borderRadius={"xl"}
       my={"0.125rem"}
       p={"0.75rem"}
-      boxShadow={"sm"}
+      boxShadow={"md"}
       _hover={{ bgColor: "#f9f9f9" }}
       transition="background-color 0.2s ease-in-out"
     >
       {listData.items.map((item, index) => (
-        // console.log("ini item:", item),
         <Stack
           key={index}
           flexDirection={"row"}
@@ -30,7 +27,6 @@ const CurrentList = ({
         >
           <Stack flexDirection={"row"}>
             <FaCircle color={"#f0e13d"} fontSize={"1.25rem"} />
-
             <Text
               fontSize={"0.9rem"}
               fontWeight={600}
@@ -40,7 +36,6 @@ const CurrentList = ({
               {item.itemName}
             </Text>
           </Stack>
-
           <Stack
             bgColor={"black"}
             color={"white"}
@@ -63,4 +58,4 @@ const CurrentList = ({
   );
 };
 
-export default CurrentList;
+export default HomeList;

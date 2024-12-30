@@ -1,7 +1,15 @@
 import { Stack, Text, Spacer, Box } from "@chakra-ui/react";
 import { FaTrash } from "react-icons/fa";
 
-const ItemTemplate = ({ name, id }: { name: string; id: string }) => {
+const ItemTemplate1 = ({
+  name,
+  id,
+  onDelete,
+}: {
+  name: string;
+  id: string;
+  onDelete: (id: string) => void;
+}) => {
   return (
     <Stack
       bgColor={"white"}
@@ -29,7 +37,7 @@ const ItemTemplate = ({ name, id }: { name: string; id: string }) => {
             {id}
           </Text>
         </Stack>
-        <Text fontSize={"0.9rem"} fontWeight={500} mt={"0.3rem"}>
+        <Text w={"9rem"} fontSize={"0.9rem"} fontWeight={500} mt={"0.3rem"}>
           {name}
         </Text>
       </Stack>
@@ -40,9 +48,10 @@ const ItemTemplate = ({ name, id }: { name: string; id: string }) => {
         cursor={"pointer"}
         fontSize={"1.25rem"}
         me={"0.5rem"}
+        onClick={() => onDelete(id)}
       />
     </Stack>
   );
 };
 
-export default ItemTemplate;
+export default ItemTemplate1;
