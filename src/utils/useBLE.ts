@@ -1,3 +1,4 @@
+/// <reference types="web-bluetooth" />
 export class BLECLIP {
   private writeDatatoCLIP?: BluetoothRemoteGATTCharacteristic;
   private isREQDatatoCLIP: boolean;
@@ -140,6 +141,7 @@ export class BLECLIP {
       });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private responseFromBLE(e: any): void {
     const res = e.target.value;
     const decode = new TextDecoder();
