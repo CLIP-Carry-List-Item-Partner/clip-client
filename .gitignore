@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# -- removed due to errors in cloudflare pages - just ignore local lockb
+bun.lockb
