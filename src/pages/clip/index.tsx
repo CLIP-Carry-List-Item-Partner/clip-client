@@ -116,22 +116,13 @@ const Home = () => {
               shadow={"lg"}
               borderRadius={"xl"}
             >
-              <MenuGroup>
-                <MenuItem
-                  fontWeight={"regular"}
-                  py={"0.8rem"}
-                  borderRadius={"md"}
-                >
-                  Edit Profile
-                </MenuItem>
-              </MenuGroup>
-              <MenuDivider />
               <MenuItem
                 icon={<HiOutlineLogout size="1.5em" />}
                 onClick={() => auth.logout()}
                 fontWeight={"bold"}
                 py={"0.6rem"}
                 color={"red.700"}
+                borderRadius={"lg"}
               >
                 Logout
               </MenuItem>
