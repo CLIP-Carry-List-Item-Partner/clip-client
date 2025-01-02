@@ -91,7 +91,7 @@ const Login = () => {
             borderRadius={"lg"}
             borderColor={"#ECECEC"}
             as={Link}
-            to={`http://clip-hub.tech/auth/login`}
+            to={`https://clip-hub.tech/auth/google/callback`}
           >
             <Stack direction={"row"} align={"center"} justify={"center"}>
               <FcGoogle fontSize={"1.5rem"} />
