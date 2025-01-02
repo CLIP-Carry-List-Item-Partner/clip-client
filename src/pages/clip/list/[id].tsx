@@ -31,7 +31,6 @@ import { useBluetooth } from "@/providers/BluetoothProvider";
 import useApi, { ResponseModel, useToastErrorHandler } from "@/hooks/useApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
-import list from "@/assets/list.svg";
 
 type ScannedItems = {
   id: string;
@@ -67,21 +66,6 @@ type ModalState = {
   id: number;
   mode: "edit" | "delete";
 };
-
-// type ListModel = {
-//   items: {
-//     listId: number;
-//     item: {
-//       id: string;
-//       name: string;
-//     };
-//   }[];
-//   id: number;
-//   name: string;
-//   createdAt: Date;
-//   updatedAt: Date;
-//   userId: number;
-// } | null;
 
 const DetailList = () => {
   const { id } = useParams();
@@ -250,16 +234,6 @@ const DetailList = () => {
   useEffect(() => {
     setScannedItems([]);
   }, [modalState]);
-
-  // useEffect(() => {
-  //   if (modalState && modalState.mode === "edit") {
-  //     reset({
-  //       name: modalState?.state?.name,
-  //       items: modalState?.state?.items,
-  //     });
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [modalState]);
 
   return (
     <>

@@ -271,6 +271,7 @@ const Home = () => {
                         fontWeight={600}
                         ml={"0.25rem"}
                         wordBreak="break-word"
+                        noOfLines={1}
                       >
                         {item.itemName}
                       </Text>
@@ -288,6 +289,7 @@ const Home = () => {
                         fontSize={"0.7rem"}
                         fontWeight={400}
                         letterSpacing={"0.05rem"}
+                        noOfLines={1}
                       >
                         {item.itemId}
                       </Text>

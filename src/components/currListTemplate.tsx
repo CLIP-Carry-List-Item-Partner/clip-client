@@ -1,5 +1,6 @@
 import { Stack, Text } from "@chakra-ui/react";
-import { FaCircle } from "react-icons/fa";
+// import { FaCircle } from "react-icons/fa";
+import { FaCircle, FaTrash } from "react-icons/fa";
 
 const CurrentList = ({
   listData,
@@ -21,26 +22,25 @@ const CurrentList = ({
       transition="background-color 0.2s ease-in-out"
     >
       {listData.items.map((item, index) => (
-        // console.log("ini item:", item),
         <Stack
           key={index}
           flexDirection={"row"}
           justify={"space-between"}
           w={"100%"}
+          justifyItems={"center"}
+          alignItems={"center"}
         >
           <Stack flexDirection={"row"}>
-            <FaCircle color={"#f0e13d"} fontSize={"1.25rem"} />
-
             <Text
               fontSize={"0.9rem"}
               fontWeight={600}
               ml={"0.25rem"}
               wordBreak="break-word"
+              noOfLines={1}
             >
               {item.itemName}
             </Text>
           </Stack>
-
           <Stack
             bgColor={"black"}
             color={"white"}
@@ -53,6 +53,8 @@ const CurrentList = ({
               fontSize={"0.7rem"}
               fontWeight={400}
               letterSpacing={"0.05rem"}
+              color={"#f0e13d"}
+              noOfLines={1}
             >
               {item.itemId}
             </Text>
