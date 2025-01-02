@@ -48,11 +48,11 @@ const Navbar = () => {
       label: "Item",
       icon: item,
     },
-    {
-      route: "/auth/user/profile",
-      label: "Profile",
-      icon: profile,
-    },
+    // {
+    //   route: "/auth/user/profile",
+    //   label: "Profile",
+    //   icon: profile,
+    // },
   ];
 
   // Check if the current route matches /clip/list/:id

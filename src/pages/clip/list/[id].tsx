@@ -30,7 +30,8 @@ import { z } from "zod";
 import { useBluetooth } from "@/providers/BluetoothProvider";
 import useApi, { ResponseModel, useToastErrorHandler } from "@/hooks/useApi";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import list from "@/assets/list.svg";
 
 type ScannedItems = {
   id: string;
@@ -67,20 +68,20 @@ type ModalState = {
   mode: "edit" | "delete";
 };
 
-type ListModel = {
-  items: {
-    listId: number;
-    item: {
-      id: string;
-      name: string;
-    };
-  }[];
-  id: number;
-  name: string;
-  createdAt: Date;
-  updatedAt: Date;
-  userId: number;
-} | null;
+// type ListModel = {
+//   items: {
+//     listId: number;
+//     item: {
+//       id: string;
+//       name: string;
+//     };
+//   }[];
+//   id: number;
+//   name: string;
+//   createdAt: Date;
+//   updatedAt: Date;
+//   userId: number;
+// } | null;
 
 const DetailList = () => {
   const { id } = useParams();
@@ -95,7 +96,7 @@ const DetailList = () => {
   const [deleteConfirmModal, setDeteleConfirmModal] = useState(false);
   const [scannedItems, setScannedItems] = useState<ScannedItems[]>([]);
 
-  const { data: listData, mutate } = useSWR<ListModel>(`/list/${id}`);
+  const { data: listData, mutate } = useSWR(`/list/${id}`);
 
   const validateItem = async (itemId: string) => {
     try {
@@ -115,9 +116,9 @@ const DetailList = () => {
           (item) => item.id === newTagID
         );
 
-        const existInList = listData?.items.some(
-          (item: { listId: number; item: { id: string; name: string } }) =>
-            item.item.id === newTagID
+        const existInList = listData?.data?.items.some(
+          (item: { id: string; item: { id: string } }) =>
+            item.id === newTagID || item.item?.id === newTagID
         );
 
         if (existInScanned || existInList) {
@@ -131,7 +132,7 @@ const DetailList = () => {
           return;
         }
 
-        console.log("Current list items:", listData?.items);
+        // console.log("Current list items:", listData?.items);
 
         // Validate if item exists in the /item endpoint
         const item = await validateItem(newTagID);
@@ -186,22 +187,19 @@ const DetailList = () => {
   } = useForm<ListDataFillable>({
     resolver: zodResolver(listUpdateSchema),
     defaultValues: {
-      name: listData?.name || "",
-      items: listData?.items?.map((item) => ({ id: item.item.id })) || [],
+      name: listData?.data?.name || "",
+      items: listData?.data?.items || [],
     },
   });
 
   useEffect(() => {
     // Mendapatkan item yang sudah ada di list
     const existingItems =
-      listData?.items
-        ?.map(
-          (item: { listId: number; item: { id: string; name: string } }) => ({
-            id: item.item.id,
-          })
-        )
-        .filter((item: { id: string }) => item.id) || [];
-    console.log("Existing Items:", existingItems);
+      listData?.data?.items
+        ?.map((item: { id: string }) => ({ id: item.id }))
+        .filter((item: { id: any }) => item.id) || [];
+
+    // console.log("Existing Items:", existingItems);
 
     // Memvalidasi item yang discan
     const scannedValidItems = scannedItems
@@ -224,18 +222,16 @@ const DetailList = () => {
 
     // Menghindari setValue jika tidak ada perubahan
     setValue("items", mergedItems);
-  }, [scannedItems, listData?.items, setValue]);
+  }, [scannedItems, listData?.data?.items, setValue]);
 
   // Reset modal state saat modal dibuka
   useEffect(() => {
-    if (listData) {
+    if (listData?.data) {
       reset({
-        name: listData?.name,
-        items: listData?.items.map(
-          (item: { listId: number; item: { id: string; name: string } }) => ({
-            id: item.item.id,
-          })
-        ),
+        name: listData?.data?.name,
+        items: listData?.data?.items.map((item: { id: string }) => ({
+          id: item.id,
+        })),
       });
     }
   }, [listData, reset]);
@@ -243,8 +239,8 @@ const DetailList = () => {
   useEffect(() => {
     if (listData) {
       reset({
-        name: listData?.name,
-        items: listData?.items.map((item) => ({ id: item.item.id })),
+        name: listData?.data?.name,
+        items: listData?.data?.items,
       });
     }
   }, [listData, reset]);
@@ -288,7 +284,11 @@ const DetailList = () => {
             <PiCaretCircleLeftFill fontSize={"2rem"} />
           </Box>
           <Text fontSize={"1rem"} fontWeight={"semibold"} ml={"0.5rem"}>
-            {listData && listData ? listData?.name : <Text>Loading...</Text>}
+            {listData && listData.data ? (
+              listData?.data?.name
+            ) : (
+              <Text>Loading...</Text>
+            )}
           </Text>
           <Spacer />
           <Button
@@ -302,7 +302,8 @@ const DetailList = () => {
             onClick={() =>
               setModalState({
                 mode: "edit",
-                id: listData!.id,
+                id: listData?.data?.id,
+                state: listData?.data,
               })
             }
           >
@@ -322,10 +323,10 @@ const DetailList = () => {
           overflowY={"auto"}
         >
           {listData &&
-          Array.isArray(listData?.items) &&
-          listData.items.length > 0 ? (
+          Array.isArray(listData.data.items) &&
+          listData.data.items.length > 0 ? (
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            listData.items.map((item: any) => (
+            listData.data.items.map((item: any) => (
               <CurrTemplate
                 key={item.item.id}
                 listData={{
@@ -460,30 +461,26 @@ const DetailList = () => {
                       borderRadius={"xl"}
                       p={"0.6rem"}
                     >
-                      {listData?.items && Array.isArray(listData?.items) ? (
-                        [...(listData?.items || []), ...scannedItems].length >
-                        0 ? (
-                          [...(listData?.items || []), ...scannedItems].map(
-                            (item, index) => (
-                              <CurrTemplate
-                                key={`${
-                                  "item" in item ? item.item.id : item.id
-                                }-${index}`}
-                                listData={{
-                                  items: [
-                                    {
-                                      itemName:
-                                        "item" in item
-                                          ? item.item.name
-                                          : item.name,
-                                      itemId:
-                                        "item" in item ? item.item.id : item.id,
-                                    },
-                                  ],
-                                }}
-                              />
-                            )
-                          )
+                      {listData?.data?.items &&
+                      Array.isArray(listData?.data?.items) ? (
+                        [...(listData?.data?.items || []), ...scannedItems]
+                          .length > 0 ? (
+                          [
+                            ...(listData?.data?.items || []),
+                            ...scannedItems,
+                          ].map((item, index) => (
+                            <CurrTemplate
+                              key={`${item.id || item.item.id}-${index}`}
+                              listData={{
+                                items: [
+                                  {
+                                    itemName: item.name || item.item.name,
+                                    itemId: item.id || item.item.id,
+                                  },
+                                ],
+                              }}
+                            />
+                          ))
                         ) : (
                           <Stack
                             border={"1px"}
