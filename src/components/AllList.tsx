@@ -19,7 +19,12 @@ const AllList = ({
         px={"1rem"}
         pt={"1rem"}
       >
-        <Text fontWeight={"medium"} color={"black"} fontSize={"0.8rem"}>
+        <Text
+          fontWeight={"medium"}
+          color={"black"}
+          fontSize={"0.8rem"}
+          noOfLines={1}
+        >
           {listData.name || "List Name"}
         </Text>
         <Spacer />
@@ -55,7 +60,8 @@ const AllList = ({
                 borderRadius={"lg"}
                 w={"max-content"}
               >
-                <Text>{item.itemName}</Text> {/* Menampilkan nama item */}
+                <Text noOfLines={1}>{item.itemName}</Text>{" "}
+                {/* Menampilkan nama item */}
               </Stack>
             ))}
           </Stack>

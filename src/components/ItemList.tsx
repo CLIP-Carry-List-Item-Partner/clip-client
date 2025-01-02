@@ -34,11 +34,22 @@ const ItemList = ({
           borderRadius={"md"}
           w={"fit-content"}
         >
-          <Text fontSize={"0.7rem"} fontWeight={400} color={"white"}>
+          <Text
+            fontSize={"0.7rem"}
+            fontWeight={400}
+            color={"white"}
+            noOfLines={1}
+          >
             {itemData.id}
           </Text>
         </Stack>
-        <Text w={"10rem"} fontSize={"1rem"} fontWeight={500} mt={"0.3rem"}>
+        <Text
+          w={"10rem"}
+          fontSize={"1rem"}
+          fontWeight={500}
+          mt={"0.3rem"}
+          noOfLines={1}
+        >
           {itemData.name}
         </Text>
       </Stack>
