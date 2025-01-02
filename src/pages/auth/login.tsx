@@ -91,7 +91,7 @@ const Login = () => {
             borderRadius={"lg"}
             borderColor={"#ECECEC"}
             as={Link}
-            to={`http://localhost:8080/auth/login`}
+            to={`http://clip-hub.tech/auth/login`}
           >
             <Stack direction={"row"} align={"center"} justify={"center"}>
               <FcGoogle fontSize={"1.5rem"} />
