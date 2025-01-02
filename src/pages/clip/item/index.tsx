@@ -74,6 +74,7 @@ const Item = () => {
   useEffect(() => {
     if (isConnected && bleClip) {
       bleClip.setAddItemCallback((newTagID) => {
+        // console.log("New Tag ID: ", newTagID);
         setScannedItems(newTagID);
       });
     }
@@ -115,30 +116,31 @@ const Item = () => {
 
   useEffect(() => {
     if (scannedItems) {
-      setValue("id", scannedItems);
-      reset((prev) => ({
-        ...prev,
-        id: scannedItems,
-      }));
+      if (modalState && modalState.mode === "create") {
+        setValue("id", scannedItems);
+        reset((prev) => ({
+          ...prev,
+          id: scannedItems,
+        }));
+      }
     }
   }, [scannedItems, setValue, reset]);
 
   const [modalState, setModalState] = useState<ModalState | undefined>();
 
   useEffect(() => {
-    if (modalState && modalState.mode === "edit") {
+    if (modalState && modalState.mode === "edit" && modalState.state) {
       reset({
-        id: modalState.state?.id || "",
-        name: modalState.state?.name || "",
+        id: modalState.state.id,
+        name: modalState.state.name,
       });
     }
-  }, [modalState, reset, scannedItems]);
+  }, [modalState, reset]);
 
   useEffect(() => {
     if (modalState && modalState.mode === "create") {
       reset({
-        id: modalState.state?.id || "",
-        name: modalState.state?.name || "",
+        id: modalState.state?.id,
       });
     }
   }, [modalState, reset, scannedItems]);
@@ -250,6 +252,11 @@ const Item = () => {
                   Scan your item with the CLIP module and item ID will be shown.
                 </Text>
               )}
+              {modalState?.mode === "edit" && (
+                <Text fontWeight={"normal"} fontSize={"0.8rem"}>
+                  Update your item name.
+                </Text>
+              )}
               {modalState?.mode === "delete" && (
                 <Text fontWeight={"normal"} fontSize={"0.8rem"}>
                   Are you sure you want to delete this item?
@@ -302,6 +309,7 @@ const Item = () => {
                       bgColor={"black"}
                       color={"white"}
                       {...register("id")}
+                      // value={scannedItems!}
                       readOnly
                     />
                     <FormErrorMessage>
@@ -372,7 +380,7 @@ const Item = () => {
                     .finally(() => {
                       setModalState(undefined);
                       mutate();
-                      setScannedItems("");
+                      // setScannedItems("");
                     });
                 })}
               >
