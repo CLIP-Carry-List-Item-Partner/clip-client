@@ -134,6 +134,7 @@ const DetailList = () => {
             description: "This item does not exist.",
             status: "error",
             duration: 3000,
+            position: "top",
             isClosable: true,
           });
         }
@@ -396,8 +397,9 @@ const DetailList = () => {
                       toast({
                         title: "List updated successfully",
                         status: "success",
-                        duration: 3000,
+                        duration: 2000,
                         isClosable: true,
+                        position: "top",
                         description: res.data.message,
                       });
                     })
@@ -565,6 +567,7 @@ const DetailList = () => {
                     description: "Invalid List ID",
                     status: "error",
                     duration: 3000,
+                    position: "top",
                     isClosable: true,
                   });
                   return;
@@ -575,8 +578,9 @@ const DetailList = () => {
                     toast({
                       title: "List deleted successfully",
                       status: "success",
-                      duration: 3000,
+                      duration: 2000,
                       isClosable: true,
+                      position: "top",
                       description: res.data.message,
                     });
                   })

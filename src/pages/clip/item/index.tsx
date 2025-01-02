@@ -278,7 +278,7 @@ const Item = () => {
                         toast({
                           title: "Item updated successfully",
                           status: "success",
-                          duration: 3000,
+                          duration: 2000,
                           isClosable: true,
                           position: "top",
                           description: res.data.message,
@@ -370,7 +370,7 @@ const Item = () => {
                       toast({
                         title: "Item created successfully",
                         status: "success",
-                        duration: 3000,
+                        duration: 2000,
                         isClosable: true,
                         position: "top",
                         description: res.data.message,
@@ -481,8 +481,9 @@ const Item = () => {
                         toast({
                           title: "Item deleted successfully",
                           status: "success",
-                          duration: 3000,
+                          duration: 2000,
                           isClosable: true,
+                          position: "top",
                           description: res.data.message,
                         });
                       })
