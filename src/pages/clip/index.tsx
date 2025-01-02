@@ -89,10 +89,15 @@ const Home = () => {
         {/* <-- Nama, Email, Profile Start --> */}
         <Stack direction={"row"} align={"center"}>
           <Stack color={"black"} gap={"0.4rem"}>
-            <Text fontWeight={700} fontSize={"1.2rem"}>
+            <Text fontWeight={700} fontSize={"1.2rem"} noOfLines={1}>
               {auth.user?.name}
             </Text>
-            <Text fontWeight={400} color={"#777777"} fontSize={"0.75rem"}>
+            <Text
+              fontWeight={400}
+              color={"#777777"}
+              fontSize={"0.75rem"}
+              noOfLines={1}
+            >
               {auth.user?.email}
             </Text>
           </Stack>

@@ -238,8 +238,9 @@ const List = () => {
                       toast({
                         title: "List created successfully",
                         status: "success",
-                        duration: 3000,
+                        duration: 2000,
                         isClosable: true,
+                        position: "top",
                         description: res.data.message,
                       });
                     })
