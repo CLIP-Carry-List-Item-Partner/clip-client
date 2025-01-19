@@ -147,6 +147,7 @@ const Home = () => {
           bgGradient={
             "linear(to-r, blackAlpha.700, blackAlpha.800, blackAlpha.900)"
           }
+          overflow={"hidden"}
         >
           <Stack ml={"1.2rem"} spacing={"0.8rem"}>
             <Text
@@ -207,8 +208,14 @@ const Home = () => {
               </Stack>
             )}
           </Stack>
-          <Spacer />
-          <Image src={clipModule} alt="clipModule" w={"100%"} />
+          {/* <Spacer /> */}
+          <Image
+            src={clipModule}
+            alt="clipModule"
+            w={"100%"}
+            mt={"2rem"}
+            mr={"4rem"}
+          />
         </Stack>
         {/* <-- Device Status End --> */}
 
