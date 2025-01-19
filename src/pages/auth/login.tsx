@@ -1,5 +1,6 @@
 import { Stack, Text, Image, Button } from "@chakra-ui/react";
 import onBoard from "@/assets/onboarding.svg";
+import login from "@/assets/login.svg";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
@@ -40,10 +41,10 @@ const Login = () => {
       >
         <Stack align={"center"} w={"full"} bgColor={"#fcfbf4"}>
           <Image
-            src={onBoard}
-            alt="onBoard"
-            w={"100%"}
+            src={login}
+            alt="login"
             maxW={"full"}
+            w={"100%"}
             objectFit={"contain"}
           />
 

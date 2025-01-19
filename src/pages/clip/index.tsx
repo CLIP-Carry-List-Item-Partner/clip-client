@@ -13,6 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import pb from "@/assets/Powerbank.svg";
+import clipModule from "@/assets/clipModule.svg";
 import AllList from "@/components/AllList";
 import { useState, useEffect } from "react";
 import Lists from "@/dummy.tsx";
@@ -207,7 +208,7 @@ const Home = () => {
             )}
           </Stack>
           <Spacer />
-          <Image src={pb} alt="pb" maxH={"100%"} />
+          <Image src={clipModule} alt="clipModule" w={"100%"} />
         </Stack>
         {/* <-- Device Status End --> */}
 
