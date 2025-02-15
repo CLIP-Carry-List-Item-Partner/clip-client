@@ -18,7 +18,7 @@ import {
   // list,
   ModalFooter,
 } from "@chakra-ui/react";
-// import { FaChevronCircleLeft } from "react-icons/fa";
+
 import CurrTemplate from "@/components/CurrentList";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";

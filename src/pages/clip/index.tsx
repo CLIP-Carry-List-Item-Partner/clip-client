@@ -26,7 +26,6 @@ import useApi, { ResponseModel, useToastErrorHandler } from "@/hooks/useApi";
 import { z } from "zod";
 import { useBluetooth } from "@/providers/BluetoothProvider";
 import { FaCircle, FaCircleCheck } from "react-icons/fa6";
-// import HomeList from "@/components/homeListTemplate";
 
 type List = {
   name: string;

@@ -17,8 +17,7 @@ import {
   Input,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import pb from "@/assets/Powerbank.svg";
-import CurrTemplate from "@/components/CurrentList";
+
 import AllList from "@/components/AllList";
 import { useState, useEffect } from "react";
 import Lists from "@/dummy.tsx";
@@ -32,10 +31,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GoPlus } from "react-icons/go";
 import { useForm, Controller } from "react-hook-form";
-import { useBluetooth } from "@/providers/BluetoothProvider";
-import { Items } from "../../../dummy";
-import item from "@/assets/item.svg";
-import list from "@/assets/list.svg";
 
 type List = {
   name: string;

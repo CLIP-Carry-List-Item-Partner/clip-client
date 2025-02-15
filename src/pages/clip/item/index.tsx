@@ -17,7 +17,6 @@ import {
   useToast,
   FormErrorMessage,
 } from "@chakra-ui/react";
-// import { Items } from "@/dummy.tsx";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useNavigate } from "@/router";
