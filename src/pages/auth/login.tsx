@@ -25,7 +25,7 @@ const Login = () => {
     };
 
     checkAuth();
-  }, [auth, nav]);
+  }, [auth]);
 
   return (
     <Stack

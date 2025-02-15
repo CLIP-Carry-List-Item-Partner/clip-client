@@ -11,7 +11,7 @@ const GoogleCallback = () => {
   const toast = useToast();
 
   useEffect(() => {
-    const handleAuth = async () => {
+    const handleAuth = () => {
       if (auth.status === "authenticated") {
         toast({
           title: "Error",
@@ -59,7 +59,7 @@ const GoogleCallback = () => {
               duration: 3000,
               isClosable: true,
             });
-            return nav("/clip");
+            nav("/clip");
           })
 
           .catch(() => {
@@ -70,14 +70,14 @@ const GoogleCallback = () => {
               duration: 5000,
               isClosable: true,
             });
-            return nav("/auth/login");
+            nav("/auth/login");
           });
       }
     };
 
     handleAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth, loc, nav, toast]);
+  }, [auth]);
 
   return (
     <>
