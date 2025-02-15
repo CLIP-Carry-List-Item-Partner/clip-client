@@ -37,10 +37,6 @@ const AllList = ({
       {listData &&
       Array.isArray(listData.items) &&
       listData.items.length > 0 ? (
-        //   console.log(
-        //   "List Data Items:",
-        //   listData.items.map((item) => item.itemName)
-        // ),
         <Stack overflowX={"auto"} direction={"row"} px={"1rem"} pb={"1rem"}>
           <Stack
             fontWeight={400}
@@ -67,7 +63,6 @@ const AllList = ({
           </Stack>
         </Stack>
       ) : (
-        // Jika items kosong, tampilkan pesan "Scan Your Item"
         <Stack mb={"1rem"} px={"1rem"}>
           <Stack
             border={"1px"}

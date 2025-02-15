@@ -14,23 +14,30 @@ const AppLayout = () => {
   if (auth.status === "loading") {
     return (
       <Stack
-        justifyContent={"center"}
-        alignItems={"center"}
-        bgColor={"white"}
-        minW={"320px"}
-        maxW={"425px"}
-        minH={"100vh"}
+        w={"full"}
+        align={"center"}
+        justify={"center"}
+        fontFamily={"PlusJakartaSans"}
+        bgColor={"black"}
       >
         <Stack
-          bgColor={"#EFE43D"}
+          justifyContent={"center"}
           alignItems={"center"}
-          justifyItems={"center"}
-          p={"1rem"}
-          borderRadius={"lg"}
-          shadow={"sm"}
+          bgColor={"white"}
+          minW={"425px"}
+          minH={"100vh"}
         >
-          <Spinner size={"xl"} />
-          <Text>Loading...</Text>
+          <Stack
+            bgColor={"#EFE43D"}
+            alignItems={"center"}
+            justifyItems={"center"}
+            p={"1rem"}
+            borderRadius={"lg"}
+            shadow={"sm"}
+          >
+            <Spinner size={"xl"} />
+            <Text>Loading...</Text>
+          </Stack>
         </Stack>
       </Stack>
     );

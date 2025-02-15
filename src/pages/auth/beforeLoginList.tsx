@@ -1,7 +1,7 @@
 import { Stack, Text, Button, useToast } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import ItemTemplate1 from "@/components/itemTemplate1";
+import BeforeLoginItem from "@/components/BeforeLoginItem";
 import { useBluetooth } from "@/providers/BluetoothProvider";
 
 type ScannedItems = {
@@ -15,7 +15,6 @@ const BeforeLoginList = () => {
   const [deletedItems, setDeletedItems] = useState<string[]>([]);
   const toast = useToast();
 
-  // Ambil lastItemNumber dari localStorage atau mulai dari 1 jika belum ada
   let lastItemNumber = parseInt(
     localStorage.getItem("lastItemNumber") || "1",
     10
@@ -43,7 +42,7 @@ const BeforeLoginList = () => {
             localStorage.setItem("lastItemNumber", lastItemNumber.toString());
             return [...prevItems, newItem];
           } else {
-            console.log(`TagID ${newTagID} already exists.`);
+            // console.log(`TagID ${newTagID} already exists.`);
             toast({
               title: "Tag already exists",
               description: `TagID ${newTagID} already exists.`,
@@ -64,7 +63,6 @@ const BeforeLoginList = () => {
     setDeletedItems([...deletedItems, id]);
     localStorage.setItem("scannedItems", JSON.stringify(updatedItems));
 
-    // Jika semua item dihapus, reset lastItemNumber kembali ke 1
     if (updatedItems.length === 0) {
       localStorage.setItem("lastItemNumber", "1");
     }
@@ -134,7 +132,7 @@ const BeforeLoginList = () => {
             </Stack>
           ) : (
             scannedItems.map((item) => (
-              <ItemTemplate1
+              <BeforeLoginItem
                 key={item.id}
                 name={item.name}
                 id={item.id}

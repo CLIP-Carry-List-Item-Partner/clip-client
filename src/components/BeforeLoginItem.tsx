@@ -1,7 +1,7 @@
 import { Stack, Text, Spacer, Box } from "@chakra-ui/react";
 import { FaTrash } from "react-icons/fa";
 
-const ItemTemplate1 = ({
+const BeforeLoginItem = ({
   name,
   id,
   onDelete,
@@ -54,4 +54,4 @@ const ItemTemplate1 = ({
   );
 };
 
-export default ItemTemplate1;
+export default BeforeLoginItem;

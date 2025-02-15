@@ -18,9 +18,13 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    if (auth.status === "authenticated") {
-      return nav("/clip");
-    }
+    const checkAuth = () => {
+      if (auth.status === "authenticated") {
+        return nav("/clip");
+      }
+    };
+
+    checkAuth();
   }, [auth, nav]);
 
   return (
@@ -32,7 +36,7 @@ const Login = () => {
       bgColor={"black"}
     >
       <Stack
-        minW={"320px"}
+        // minW={"320px"}
         maxW={"425px"}
         minH={"100vh"}
         bgColor={"#FAF9F6"}
@@ -91,6 +95,7 @@ const Login = () => {
             variant={"outline"}
             borderRadius={"lg"}
             borderColor={"#ECECEC"}
+            py={"1.5rem"}
             as={Link}
             to={`https://api.clip-hub.tech/auth/login`}
             // to={`http://localhost:8080/auth/login`}
@@ -123,6 +128,7 @@ const Login = () => {
               cursor={"pointer"}
               _hover={{ bgColor: "blackAlpha.800" }}
               onClick={connectToDevice}
+              py={"1.5rem"}
             >
               <Text fontSize={"0.8rem"} fontWeight={600} color={"#F0E13D"}>
                 Connect
