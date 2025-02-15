@@ -10,16 +10,11 @@ export type Path =
   | `/auth/login`
   | `/auth/user/profile`
   | `/clip`
-  | `/clip/currentList`
   | `/clip/item`
-  | `/clip/item/:id`
-  | `/clip/item/backupIndex`
   | `/clip/list`
   | `/clip/list/:id`
-  | `/clip/list/idbackup`
 
 export type Params = {
-  '/clip/item/:id': { id: string }
   '/clip/list/:id': { id: string }
 }
 

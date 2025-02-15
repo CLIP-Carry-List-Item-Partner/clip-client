@@ -26,7 +26,7 @@ import useApi, { ResponseModel, useToastErrorHandler } from "@/hooks/useApi";
 import { z } from "zod";
 import { useBluetooth } from "@/providers/BluetoothProvider";
 import { FaCircle, FaCircleCheck } from "react-icons/fa6";
-import HomeList from "@/components/homeListTemplate";
+// import HomeList from "@/components/homeListTemplate";
 
 type List = {
   name: string;
@@ -56,11 +56,11 @@ const Home = () => {
       new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
   )[0] ?? { items: [] };
 
-  if (!currentList) {
-    console.log("No lists available");
-  } else {
-    console.log(currentList.items);
-  }
+  // if (!currentList) {
+  //   console.log("No lists available");
+  // } else {
+  //   console.log(currentList.items);
+  // }
 
   useEffect(() => {
     if (auth.status === "unauthenticated") {
@@ -69,6 +69,7 @@ const Home = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
+        position: "top",
       });
       nav("/auth/login");
       return;

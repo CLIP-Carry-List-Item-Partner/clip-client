@@ -19,7 +19,7 @@ import {
   ModalFooter,
 } from "@chakra-ui/react";
 // import { FaChevronCircleLeft } from "react-icons/fa";
-import CurrTemplate from "@/components/currListTemplate.tsx";
+import CurrTemplate from "@/components/CurrentList";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
@@ -155,6 +155,7 @@ const DetailList = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
+        position: "top",
       });
       nav("/auth/login");
       return;
@@ -183,14 +184,13 @@ const DetailList = () => {
       listData?.data?.items
         ?.map((item: { id: string }) => ({ id: item.id }))
         .filter((item: { id: any }) => item.id) || [];
-
     // console.log("Existing Items:", existingItems);
 
     // Memvalidasi item yang discan
     const scannedValidItems = scannedItems
       .map((item) => ({ id: item.id }))
       .filter((item) => item.id);
-    console.log("Valid Scanned Items:", scannedValidItems);
+    // console.log("Valid Scanned Items:", scannedValidItems);
 
     // Menggabungkan existingItems dan scannedValidItems tanpa duplikasi
     const mergedItems = [...existingItems, ...scannedValidItems].reduce(
@@ -203,9 +203,8 @@ const DetailList = () => {
       [] as { id: string }[]
     );
 
-    console.log("Merged Items (Final):", mergedItems);
+    // console.log("Merged Items (Final):", mergedItems);
 
-    // Menghindari setValue jika tidak ada perubahan
     setValue("items", mergedItems);
   }, [scannedItems, listData?.data?.items, setValue]);
 

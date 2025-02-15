@@ -18,7 +18,7 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import pb from "@/assets/Powerbank.svg";
-import CurrTemplate from "@/components/currListTemplate.tsx";
+import CurrTemplate from "@/components/CurrentList";
 import AllList from "@/components/AllList";
 import { useState, useEffect } from "react";
 import Lists from "@/dummy.tsx";
@@ -101,6 +101,7 @@ const List = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
+        position: "top",
       });
       nav("/auth/login");
       return;

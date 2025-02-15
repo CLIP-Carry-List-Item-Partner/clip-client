@@ -22,6 +22,7 @@ const Navbar = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
+        position: "top",
       });
       nav("/auth/login");
       return;

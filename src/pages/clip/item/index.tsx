@@ -92,6 +92,7 @@ const Item = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
+        position: "top",
       });
       nav("/auth/login");
       return;
@@ -192,7 +193,7 @@ const Item = () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           itemData.data.map((item: any) => (
             <ItemList
-              key={item.id} // Ensure unique key for each list
+              key={item.id}
               itemData={{
                 id: item.id,
                 name: item.name,
