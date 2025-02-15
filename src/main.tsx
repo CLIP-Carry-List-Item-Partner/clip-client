@@ -2,8 +2,6 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import AuthProvider from "@/providers/AuthProvider";
 import { BluetoothProvider } from "@/providers/BluetoothProvider";
-// import "./index.css";
-// import { BrowserRouter } from "react-router-dom";
 import { Routes } from "@generouted/react-router";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
