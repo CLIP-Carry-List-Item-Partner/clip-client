@@ -8,12 +8,16 @@ const Root = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (auth.status === "unauthenticated") {
-      return navigate("/auth/login");
-    }
-    if (auth.status === "authenticated") {
-      return navigate("/clip");
-    }
+    const checkAuth = () => {
+      if (auth.status === "unauthenticated") {
+        return navigate("/auth/login");
+      }
+      if (auth.status === "authenticated") {
+        return navigate("/clip");
+      }
+    };
+
+    checkAuth();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth]);
