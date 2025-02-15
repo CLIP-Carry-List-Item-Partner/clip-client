@@ -18,14 +18,14 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    // const checkAuth = () => {
-    if (auth.status === "authenticated") {
-      return nav("/clip");
-    }
-    // };
+    const checkAuth = () => {
+      if (auth.status === "authenticated") {
+        return nav("/clip");
+      }
+    };
 
-    // checkAuth();
-  }, [auth, nav]);
+    checkAuth();
+  }, [auth]);
 
   return (
     <Stack
