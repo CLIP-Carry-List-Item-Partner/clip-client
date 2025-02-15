@@ -11,7 +11,7 @@ const GoogleCallback = () => {
   const toast = useToast();
 
   useEffect(() => {
-    const handleAuth = () => {
+    const handleAuth = async () => {
       if (auth.status === "authenticated") {
         toast({
           title: "Error",
@@ -50,28 +50,25 @@ const GoogleCallback = () => {
           return nav("/auth/login");
         }
 
-        auth
-          .googleCallback(code)
-          .then(() => {
-            toast({
-              title: "Welcome back!",
-              status: "success",
-              duration: 3000,
-              isClosable: true,
-            });
-            nav("/clip");
-          })
-
-          .catch(() => {
-            toast({
-              title: "Error",
-              description: "Something went wrong",
-              status: "error",
-              duration: 5000,
-              isClosable: true,
-            });
-            nav("/auth/login");
+        try {
+          await auth.googleCallback(code);
+          toast({
+            title: "Welcome back!",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
           });
+          nav("/clip");
+        } catch (err) {
+          toast({
+            title: "Error",
+            description: "Something went wrong",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+          nav("/auth/login");
+        }
       }
     };
 
