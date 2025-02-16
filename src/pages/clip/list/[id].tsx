@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react";
 
 import CurrTemplate from "@/components/CurrentList";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import { useState, useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "@/router";

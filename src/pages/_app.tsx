@@ -1,8 +1,7 @@
 import { Stack, Text, Image, useToast, Spinner } from "@chakra-ui/react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "@/router";
-import { useEffect } from "react";
 import { SWRConfig } from "swr";
 import { useFetcher } from "@/hooks/useApi";
 

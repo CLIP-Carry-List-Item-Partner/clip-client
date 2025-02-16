@@ -1,5 +1,5 @@
 import { Stack, Text, Button, useToast } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import BeforeLoginItem from "@/components/BeforeLoginItem";
 import { useBluetooth } from "@/providers/BluetoothProvider";
