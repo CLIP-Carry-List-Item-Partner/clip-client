@@ -1,7 +1,7 @@
 import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { useNavigate } from "@/router";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { Spinner, Stack, Text, useToast } from "@chakra-ui/react";
 
 const GoogleCallback = () => {

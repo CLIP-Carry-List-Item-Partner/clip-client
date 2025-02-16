@@ -3,7 +3,7 @@ import home from "@/assets/home.svg";
 import list from "@/assets/list.svg";
 import item from "@/assets/item.svg";
 import profile from "@/assets/profile.svg";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "@/router";
 import { useEffect, useState } from "react";

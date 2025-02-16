@@ -3,7 +3,7 @@ import onBoard from "@/assets/onboarding.svg";
 import login from "@/assets/login.svg";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "@/hooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useEffect } from "react";
 import { useNavigate } from "@/router";
 import { useBluetooth } from "@/providers/BluetoothProvider";
