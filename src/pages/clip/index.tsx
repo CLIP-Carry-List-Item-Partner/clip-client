@@ -16,7 +16,6 @@ import pb from "@/assets/Powerbank.svg";
 import clipModule from "@/assets/clipModule.svg";
 import AllList from "@/components/AllList";
 import { useState, useEffect } from "react";
-import Lists from "@/dummy.tsx";
 import { useNavigate } from "@/router";
 import useAuth from "@/hooks/useAuth";
 import { Outlet, useLocation, Link } from "react-router-dom";
